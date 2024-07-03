@@ -31,7 +31,7 @@ class BuyTokenWeightedDaoToken(BaseModel):
 class DeployProposal(BaseModel):
     community_id: uuid.UUID = Field(..., description="community id")
     minimumquorum: int = Field(..., description="minimum quorm for praposal")
-    start_time:str = Field(..., description="start time of praposal")
+    start_time: str = Field(..., description="start time of praposal")
     end_time: str = Field(..., description="end time of praposal")
-    praposal:str  = Field(..., description="proposal")
-
+    proposal: str = Field(..., description="proposal")
+    userAddress: str = Field(..., description="user address")

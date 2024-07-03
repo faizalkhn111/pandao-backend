@@ -314,3 +314,7 @@ def get_community_tokens(community_id: uuid.UUID):
             }
         )
     return response
+
+
+def get_community_active_proposal(community_id: uuid.UUID):
+    praposal = Proposal

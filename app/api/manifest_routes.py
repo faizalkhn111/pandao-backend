@@ -139,7 +139,6 @@ def transaction_manifest_routes(app):
             start_time = req.start_time
             end_time = req.end_time
             account_address = req.userAddress
-
             end_time_unix = int(end_time)  # Convert string to integer Unix timestamp
             end_time_dt = datetime.utcfromtimestamp(end_time_unix)
 

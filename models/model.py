@@ -107,12 +107,12 @@ class Proposal(Base):
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     proposal: Mapped[str] = mapped_column(String)
     community_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("community.id"))
-    voted_for: Column(Float)
-    voted_against: Column(Float)
-    is_active: Column(Boolean)
-    start_time: Column(Integer)
-    ends_time: Column(Integer)
-    minimum_quorum: Column(Integer)
+    voted_for = Column(Float)
+    voted_against = Column(Float)
+    is_active = Column(Boolean)
+    start_time = Column(Integer)
+    ends_time = Column(Integer)
+    minimum_quorum = Column(Integer)
 
 
 # Create an engine
