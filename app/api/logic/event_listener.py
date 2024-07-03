@@ -155,7 +155,7 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 # get community names and detail
                 community = conn.query(Community).filter(Community.component_address == community_address).first()
                 new_proposal = Proposal(
-                    praposal=metadata['current_praposal'],
+                    proposal=metadata['current_praposal'],
                     community_id=community.id,
                     voted_for=metadata['voted_for'],
                     voted_against=metadata['voted_againt'],
@@ -173,12 +173,6 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 conn.add(activity)
                 conn.add(new_proposal)
                 conn.commit()
-
-
-
-
-
-
 
         except SQLAlchemyError as e:
             print(e)
