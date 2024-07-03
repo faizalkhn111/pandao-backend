@@ -9,7 +9,7 @@ from app.api.forms.blueprint import DeployCommunity
 from app.api.forms.community import CommunityComment
 # from app.api.forms.blueprint import DeployCommunity
 from models import dbsession as conn, BluePrint, Community as Com, User, Participants, UserMetaData, CommunityComments, \
-    UserActivity, Community, CommunityToken
+    UserActivity, Community, CommunityToken, Proposal
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -317,4 +317,5 @@ def get_community_tokens(community_id: uuid.UUID):
 
 
 def get_community_active_proposal(community_id: uuid.UUID):
-    praposal = Proposal
+    proposal = conn.query(Proposal).filter(Proposal.community_id == community_id , Proposal.is_active == True ).first()
+    return proposal
