@@ -172,7 +172,7 @@ def transaction_manifest_routes(app):
                                     CALL_METHOD
                                     Address("{community.component_address}")
                                     "create_praposal"
-                                    "{req.praposal}"
+                                    "{req.proposal}"
                                     {req.minimumquorum}u8
                                     Tuple(
                                     {start_year}u32 ,
