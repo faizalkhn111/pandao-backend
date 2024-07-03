@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 
-from models import Community, dbsession as conn, UserActivity, CommunityToken
+from models import Community, dbsession as conn, UserActivity, CommunityToken, Proposal
 
 
 ## pending , add logger
@@ -124,7 +124,7 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 community_address = resources['component_address']
                 # get community names and detail
                 community = conn.query(Community).filter(Community.component_address == community_address).first()
-                community.funds -= float( metadata['amount_paid'] )
+                community.funds -= float(metadata['amount_paid'])
                 community.token_bought -= float(metadata['amount'])
                 token_bought = float(metadata['amount'])
                 try:
@@ -150,7 +150,31 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
 
                 pass
             elif resources['event_type'] == 'PRAPOSAL':
-                pass
+                community_address = resources['component_address']
+                # get community names and detail
+                community = conn.query(Community).filter(Community.component_address == community_address).first()
+                new_proposal = Proposal(
+                    praposal=metadata['current_praposal'],
+                    community_id=community.id,
+                    voted_for=metadata['voted_for'],
+                    voted_against=metadata['voted_againt'],
+                    is_active=True,
+                    start_time=metadata['start_time_ts'],
+                    ends_time=metadata['end_time_ts'],
+                    minimum_quorum=metadata['minimum_quorum'],
+                )
+                activity = UserActivity(
+                    transaction_id=tx_id,
+                    transaction_info=f'created a proposal',
+                    user_address=user_address,
+                    community_id=community.id
+                )
+                conn.add(activity)
+                conn.add(new_proposal)
+                conn.commit()
+
+
+
 
 
 

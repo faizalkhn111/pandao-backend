@@ -36,7 +36,7 @@ class UserActivity(Base):
     # this contains a basic info about a user transaction in the DAO
     transaction_info: Mapped[str] = Column(String)
     activity_type: Mapped[str] = Column(String)
-    community_id = Column(UUID(as_uuid=True) )
+    community_id = Column(UUID(as_uuid=True))
     user_address: Mapped[str] = Column(String, ForeignKey('users.public_address'))
 
 
@@ -102,11 +102,25 @@ class CommunityComments(Base):
     community: Mapped["Community"] = relationship("Community", back_populates="community_comment")
 
 
+class Proposal(Base):
+    __tablename__ = 'proposal'
+    id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    proposal: Mapped[str] = mapped_column(String)
+    community_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("community.id"))
+    voted_for: Column(Float)
+    voted_against: Column(Float)
+    is_active: Column(Boolean)
+    start_time: Column(Integer)
+    ends_time: Column(Integer)
+    minimum_quorum: Column(Integer)
+
+
 # Create an engine
+
+
 engine = create_engine(
     'postgresql://pandao_backend_fw67_user:jPMCLTHyKvp296K7vuC3l0TGhE72gS30@dpg-cpsnpsl6l47c73e9nc2g-a.oregon-postgres.render.com/pandao_backend_fw67')
 Base.metadata.create_all(engine)
-
 
 # Create a configured "Session" class
 Session = sessionmaker(bind=engine)

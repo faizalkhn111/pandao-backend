@@ -138,6 +138,7 @@ def transaction_manifest_routes(app):
             community = conn.query(Community).filter(Community.id == req.community_id).first()
             start_time = req.start_time
             end_time = req.end_time
+            account_address = req.userAddress
 
             end_time_unix = int(end_time)  # Convert string to integer Unix timestamp
             end_time_dt = datetime.utcfromtimestamp(end_time_unix)
@@ -162,6 +163,13 @@ def transaction_manifest_routes(app):
             start_second = start_time_dt.second
 
             transaction_string = f"""
+                                    
+                                    CALL_METHOD
+                                    Address("{account_address}")
+                                    "create_proof_of_amount"
+                                    Address("{community.owner_token_address}")
+                                    Decimal("1")
+                                    ;
                                     CALL_METHOD
                                     Address("{community.component_address}")
                                     "create_praposal"
