@@ -38,7 +38,7 @@ def generate_random_string(length=12):
 
 def get_community():
     try:
-        communities = conn.query(Com).all()
+        communities = conn.query(Com).limit(5).all()
         return communities
     except SQLAlchemyError as e:
         # Log the error e

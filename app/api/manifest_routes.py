@@ -3,8 +3,9 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.api.forms.transaction_manifest import DeployTokenWeightedDao, BuyTokenWeightedDaoToken, DeployProposal
-from models import Community, Participants
+from app.api.forms.transaction_manifest import DeployTokenWeightedDao, BuyTokenWeightedDaoToken, DeployProposal, \
+    ProposalVote
+from models import Community, Participants, Proposal
 from models import dbsession as conn
 
 
@@ -131,11 +132,16 @@ def transaction_manifest_routes(app):
             print(e)
             raise HTTPException(status_code=500, detail="Internal Server Error")
 
-
     @app.post('/manifest/build/praposal', tags=(['manifest_builder']))
     def sell_token_token_weighted_dao(req: DeployProposal):
         try:
             community = conn.query(Community).filter(Community.id == req.community_id).first()
+            # check if there is any ongoing proposal
+            proposal = conn.query(Proposal).filter(Proposal.community_id == req.community_id,
+                                                   Proposal.is_active == True).first()
+            if proposal:
+                raise HTTPException(status_code=401, detail="there is already a active proposal")
+
             start_time = req.start_time
             end_time = req.end_time
             account_address = req.userAddress
@@ -197,4 +203,6 @@ def transaction_manifest_routes(app):
             print(e)
             raise HTTPException(status_code=500, detail="Internal Server Error")
 
-
+    @app.post('/manifest/proposal/vote', tags=(['manifest_builder']))
+    def vote_in_proposal(req: ProposalVote):
+            return {}

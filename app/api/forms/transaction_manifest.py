@@ -35,3 +35,10 @@ class DeployProposal(BaseModel):
     end_time: str = Field(..., description="end time of praposal")
     proposal: str = Field(..., description="proposal")
     userAddress: str = Field(..., description="user address")
+
+
+class ProposalVote(BaseModel):
+    proposal_address: str = Field(..., description="propsal address")
+    userAddress: str = Field(..., description="user address")
+
+
