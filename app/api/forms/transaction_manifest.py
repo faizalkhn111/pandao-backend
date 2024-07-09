@@ -40,5 +40,4 @@ class DeployProposal(BaseModel):
 class ProposalVote(BaseModel):
     proposal_address: str = Field(..., description="propsal address")
     userAddress: str = Field(..., description="user address")
-
-
+    vote_against: str = Field(... , description=" voted against")

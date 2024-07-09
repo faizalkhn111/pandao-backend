@@ -151,7 +151,6 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 pass
             elif resources['event_type'] == 'PRAPOSAL':
                 community_address = resources['component_address']
-                print(community_address)
                 # get community names and detail
                 community = conn.query(Community).filter(Community.component_address == community_address).first()
                 new_proposal = Proposal(
@@ -173,6 +172,10 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 conn.add(activity)
                 conn.add(new_proposal)
                 conn.commit()
+            elif resources['event_type'] == 'VOTE':
+                proposal_address = resources['component_address']
+
+
 
         except SQLAlchemyError as e:
             print(e)
