@@ -207,6 +207,30 @@ def transaction_manifest_routes(app):
     def vote_in_proposal(req: ProposalVote):
         proposal = conn.query(Proposal).filter(Proposal.proposal_address == req.proposal_address).first()
         community_id = proposal.community_id
+        community = conn.query(Community).filter(Community.id == community_id).first()
         user_token = conn.query(CommunityToken).filter(CommunityToken.community_id == community_id, CommunityToken.user_address == req.userAddress).first()
         token_supply = user_token.token_owned
-        return {}
+        transaction_string = f"""
+        CALL_METHOD
+            Address("{req.userAddress}")
+            "withdraw"
+            Address("{community.token_address}")
+            Decimal("{token_supply}")
+        ;
+
+
+        CALL_METHOD
+            Address("{req.proposal_address}")
+            "vote"
+            Bucket("bucket1")
+            "false"
+            
+        ;
+
+        CALL_METHOD
+            Address("{req.userAddress}")
+            "deposit_batch"
+            Expression("ENTIRE_WORKTOP")
+        ;
+        """
+        return transaction_string
