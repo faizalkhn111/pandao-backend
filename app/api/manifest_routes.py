@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.forms.transaction_manifest import DeployTokenWeightedDao, BuyTokenWeightedDaoToken, DeployProposal, \
     ProposalVote
-from models import Community, Participants, Proposal
+from models import Community, Participants, Proposal, CommunityToken
 from models import dbsession as conn
 
 
@@ -22,7 +22,7 @@ def transaction_manifest_routes(app):
         user_account = req.userAddress
         manifest = command_string = (
             f'CALL_FUNCTION\n'
-            f'Address(" package_tdx_2_1ph27xm4rulmd0mupylsyw3hszx384hw5z5h2gzcx9ryzu96k7y9m54")\n'
+            f'Address("package_tdx_2_1p4hvprlpzwnztl370lpg9yxvw6d3r6jaz0nf6pth75s9r7wmzzrcsy")\n'
             f'"TokenWeigtedDao"\n'
             f'"initiate"\n'
             f'"{organization_name}"\n'
@@ -205,4 +205,8 @@ def transaction_manifest_routes(app):
 
     @app.post('/manifest/proposal/vote', tags=(['manifest_builder']))
     def vote_in_proposal(req: ProposalVote):
-            return {}
+        proposal = conn.query(Proposal).filter(Proposal.proposal_address == req.proposal_address).first()
+        community_id = proposal.community_id
+        user_token = conn.query(CommunityToken).filter(CommunityToken.community_id == community_id, CommunityToken.user_address == req.userAddress).first()
+        token_supply = user_token.token_owned
+        return {}

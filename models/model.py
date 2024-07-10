@@ -1,4 +1,6 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, Boolean, Enum, DECIMAL, Float
+from idlelib.pyparse import trans
+
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, Boolean, Enum, DECIMAL, Float, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
@@ -126,5 +128,11 @@ Base.metadata.create_all(engine)
 # Create a configured "Session" class
 Session = sessionmaker(bind=engine)
 
+
+
 # Create a Session
 dbsession = Session()
+
+
+
+
