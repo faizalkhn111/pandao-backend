@@ -162,6 +162,7 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     start_time=metadata['start_time_ts'],
                     ends_time=metadata['end_time_ts'],
                     minimum_quorum=metadata['minimum_quorum'],
+                    proposal_address = metadata['component_address']
                 )
                 activity = UserActivity(
                     transaction_id=tx_id,

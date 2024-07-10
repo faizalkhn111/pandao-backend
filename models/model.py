@@ -113,6 +113,7 @@ class Proposal(Base):
     start_time = Column(Integer)
     ends_time = Column(Integer)
     minimum_quorum = Column(Integer)
+    proposal_address : Mapped[str] = mapped_column(String)
 
 
 # Create an engine
