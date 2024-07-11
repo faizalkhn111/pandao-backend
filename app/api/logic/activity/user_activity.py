@@ -37,7 +37,10 @@ def get_user_activity(community_id: uuid):
             UserMetaData, User.public_address == UserMetaData.user_address
         ).filter(
             UserActivity.community_id == community_id
-        ).all())
+        ).order_by(
+            UserActivity.created_at.desc()
+        )
+        .all())
         for data in results:
             activity = {
                 'tx_id': data[0],
