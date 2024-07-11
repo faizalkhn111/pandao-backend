@@ -29,7 +29,8 @@ def get_user_activity(community_id: uuid):
             UserActivity.user_address,
             User.name,
             UserMetaData.image_url,
-            UserActivity.transaction_info
+            UserActivity.transaction_info,
+            UserActivity.created_at
         ).join(
             User, UserActivity.user_address == User.public_address
         ).join(
@@ -44,6 +45,7 @@ def get_user_activity(community_id: uuid):
                 'user_name': data[2],
                 'user_image_url': data[3],
                 'info': data[4],
+                'created_at': data[5]
             }
             response.append(activity)
         return response
