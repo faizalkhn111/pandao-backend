@@ -28,7 +28,6 @@ class UserMetaData(Base):
     user_address: Mapped[str] = Column(String, ForeignKey('users.public_address'), primary_key=True)
     about: Mapped[str] = Column(String)
     image_url: Mapped[str] = Column(String)
-
     user: Mapped["User"] = relationship("User", back_populates="usermetadata")
 
 
@@ -40,6 +39,7 @@ class UserActivity(Base):
     activity_type: Mapped[str] = Column(String)
     community_id = Column(UUID(as_uuid=True))
     user_address: Mapped[str] = Column(String, ForeignKey('users.public_address'))
+    created_at: Mapped[DateTime] = Column(DateTime, default=func.now())
 
 
 class BluePrint(Base):
