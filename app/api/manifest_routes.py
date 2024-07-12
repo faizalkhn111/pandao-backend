@@ -22,7 +22,7 @@ def transaction_manifest_routes(app):
         user_account = req.userAddress
         manifest = command_string = (
             f'CALL_FUNCTION\n'
-            f'Address("package_tdx_2_1pk4pt0pwgwq9uknef3uqdd0g08daxsjdjv42jresla68cd6jh9wf36")\n'
+            f'Address("package_tdx_2_1pke386qmqhhwdyarkxwnu97c9279kqps6uh0lzwzh645hcrhg5xm33")\n'
             f'"TokenWeigtedDao"\n'
             f'"initiate"\n'
             f'"{organization_name}"\n'
@@ -210,6 +210,7 @@ def transaction_manifest_routes(app):
         community = conn.query(Community).filter(Community.id == community_id).first()
         user_token = conn.query(CommunityToken).filter(CommunityToken.community_id == community_id, CommunityToken.user_address == req.userAddress).first()
         token_supply = user_token.token_owned
+        vote_against = "true" if req.vote_against else "false"
         transaction_string = f"""
         CALL_METHOD
             Address("{req.userAddress}")
@@ -219,7 +220,7 @@ def transaction_manifest_routes(app):
         ;
         
         TAKE_FROM_WORKTOP
-            Address("resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc")
+            Address("{community.token_address}")
             Decimal("{token_supply}")
             Bucket("bucket1")
         ;
@@ -229,7 +230,7 @@ def transaction_manifest_routes(app):
             Address("{community.component_address}")
             "vote"
             Bucket("bucket1")
-            {req.vote_against}
+            {vote_against}
             
         ;
 

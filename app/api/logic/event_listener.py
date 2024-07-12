@@ -175,7 +175,14 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 conn.commit()
             elif resources['event_type'] == 'VOTE':
                 proposal_address = resources['component_address']
-
+                proposal_address = metadata['praposal_address']
+                proposal = conn.query(Proposal).filter(Proposal.proposal_address == 'component_tdx_2_1cq9v3630tq80th5dnkc47xgv8tsgmldux022zmpc3ju2wrng0fdrna').first()
+                vote_againts = metadata['againts']
+                if vote_againts:
+                    proposal.voted_against += float( metadata['voting_amount'] )
+                else:
+                    proposal.voted_for += float ( metadata['voting_amount'] )
+                conn.commit()
 
 
         except SQLAlchemyError as e:
