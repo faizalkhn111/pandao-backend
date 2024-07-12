@@ -8,7 +8,7 @@ from app.api.forms.transaction_manifest import DeployTokenWeightedDao, BuyTokenW
 from models import Community, Participants, Proposal, CommunityToken
 from models import dbsession as conn
 
-
+#
 def transaction_manifest_routes(app):
     @app.post('/manifest/build/deploy_token_weighted_dao', tags=(['manifest_builder']))
     def build_token_weight_deploy_manifest(req: DeployTokenWeightedDao):
