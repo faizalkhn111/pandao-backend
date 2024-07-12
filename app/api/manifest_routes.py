@@ -217,13 +217,19 @@ def transaction_manifest_routes(app):
             Address("{community.token_address}")
             Decimal("{token_supply}")
         ;
+        
+        TAKE_FROM_WORKTOP
+            Address("resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc")
+            Decimal("{token_supply}")
+            Bucket("bucket1")
+        ;
 
 
         CALL_METHOD
-            Address("{req.proposal_address}")
+            Address("{community.component_address}")
             "vote"
             Bucket("bucket1")
-            "false"
+            {req.vote_against}
             
         ;
 
