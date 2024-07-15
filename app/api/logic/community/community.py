@@ -56,7 +56,9 @@ def get_community():
                 "total_token": community.total_token,
                 "owner_address": community.owner_address,
                 "name": community.name,
-                "number_of_participants":participant_count
+                "number_of_participants":participant_count,
+                "image":community.image,
+                "funds":community.funds
             }
         )
     return response
