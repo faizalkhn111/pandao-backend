@@ -16,6 +16,12 @@ def transaction_manifest_routes(app):
         token_supply = req.tokenSupply
         token_price = req.tokenPrice
         token_withdraw_price = req.tokenWithDrawPrice
+        if token_withdraw_price > token_price:
+            error_message = {
+                "error": "token buy back price can never be lower then token price",
+                "message": "token buy back price can never be lower then token price"
+            }
+            raise HTTPException(status_code=400, detail=error_message)
         organization_image = req.communityImage
         organization_token_image = req.tokenImage
         description = req.description
@@ -209,6 +215,12 @@ def transaction_manifest_routes(app):
         community_id = proposal.community_id
         community = conn.query(Community).filter(Community.id == community_id).first()
         user_token = conn.query(CommunityToken).filter(CommunityToken.community_id == community_id, CommunityToken.user_address == req.userAddress).first()
+        if user_token is None:
+            error_message = {
+                "error": "does not hold any token",
+                "message": "Please buy some token first before voting"
+            }
+            raise HTTPException(status_code=400, detail=error_message)
         token_supply = user_token.token_owned
         vote_against = "true" if req.vote_against else "false"
         transaction_string = f"""

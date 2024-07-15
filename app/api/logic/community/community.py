@@ -1,7 +1,7 @@
 import uuid
 
 import requests
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
@@ -37,14 +37,29 @@ def generate_random_string(length=12):
 
 
 def get_community():
-    try:
-        communities = conn.query(Com).all()
-        return communities
-    except SQLAlchemyError as e:
-        # Log the error e
-        print(e)
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+    communities_with_participants = conn.query(Community, func.count(Participants.id).label('participants_count')) \
+        .outerjoin(Participants, Community.id == Participants.community_id) \
+        .order_by(func.count(Participants.id).desc()) \
+        .group_by(Community.id) \
+        .limit(5)
 
+    # Now you can iterate over the result
+    response = []
+    for community, participant_count in communities_with_participants:
+        response.append(
+            {
+                "component_address": community.component_address,
+                "id": community.id,
+                "blueprint_slug":community.blueprint_slug,
+                "owner_token_address": community.owner_token_address,
+                "token_price":community.token_price,
+                "total_token": community.total_token,
+                "owner_address": community.owner_address,
+                "name": community.name,
+                "number_of_participants":participant_count
+            }
+        )
+    return response
 
 def get_user_community(user_addr: str):
     communities = conn.query(Com).join(

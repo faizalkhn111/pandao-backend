@@ -162,7 +162,7 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     start_time=metadata['start_time_ts'],
                     ends_time=metadata['end_time_ts'],
                     minimum_quorum=metadata['minimum_quorum'],
-                    proposal_address = metadata['component_address']
+                    proposal_address=metadata['component_address']
                 )
                 activity = UserActivity(
                     transaction_id=tx_id,
@@ -176,12 +176,12 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
             elif resources['event_type'] == 'VOTE':
                 proposal_address = resources['component_address']
                 proposal_address = metadata['praposal_address']
-                proposal = conn.query(Proposal).filter(Proposal.proposal_address == 'component_tdx_2_1cq9v3630tq80th5dnkc47xgv8tsgmldux022zmpc3ju2wrng0fdrna').first()
+                proposal = conn.query(Proposal).filter(Proposal.proposal_address == proposal_address).first()
                 vote_againts = metadata['againts']
                 if vote_againts:
-                    proposal.voted_against += float( metadata['voting_amount'] )
+                    proposal.voted_against += float(metadata['voting_amount'])
                 else:
-                    proposal.voted_for += float ( metadata['voting_amount'] )
+                    proposal.voted_for += float(metadata['voting_amount'])
                 conn.commit()
 
 
