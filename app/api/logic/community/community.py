@@ -41,7 +41,7 @@ def get_community():
         .outerjoin(Participants, Community.id == Participants.community_id) \
         .order_by(func.count(Participants.id).desc()) \
         .group_by(Community.id) \
-        .limit(5)
+        .limit(6)
 
     # Now you can iterate over the result
     response = []
@@ -58,7 +58,8 @@ def get_community():
                 "name": community.name,
                 "number_of_participants":participant_count,
                 "image":community.image,
-                "funds":community.funds
+                "funds":community.funds ,
+                "description":community.description
             }
         )
     return response
