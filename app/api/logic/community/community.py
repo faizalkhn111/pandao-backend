@@ -123,8 +123,12 @@ def user_participate_in_community(user_addr: str, community_id: uuid.UUID):
         activity = UserActivity(
             transaction_id=random_string,
             transaction_info=f'participated in {community_name}',
-            user_address=user_addr
+            user_address=user_addr,
+            community_id=community_id
         )
+        conn.add(activity)
+        conn.commit()
+
 
     except IntegrityError as e:
         conn.rollback()
@@ -244,7 +248,8 @@ def add_community_comment(req: CommunityComment):
         activity = UserActivity(
             transaction_id=random_string,
             transaction_info=f'commented in {community_name}',
-            user_address=u_adr
+            user_address=u_adr ,
+            community_id= c_id
         )
         conn.add(new_comment)
         conn.add(activity)
