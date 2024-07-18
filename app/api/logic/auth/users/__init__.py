@@ -134,6 +134,8 @@ def update_user_profile(req: UserProfileUpdate):
             user_meta_data.cover_url = req.cover_url
         if req.bio is not None:
             user_meta_data.bio = req.bio
+        if req.website_url is not None:
+            user_meta_data.website = req.website_url
 
         conn.commit()
         conn.refresh(user_meta_data)
