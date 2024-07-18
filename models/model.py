@@ -18,6 +18,7 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'users'
     name: Mapped[str] = Column(String)
+    # user public address represents the user unique id
     public_address: Mapped[str] = Column(String(256), primary_key=True)
     last_login: Mapped[DateTime] = Column(DateTime, default=func.now())
     usermetadata: Mapped["UserMetaData"] = relationship("UserMetaData", back_populates="user")
@@ -28,7 +29,13 @@ class UserMetaData(Base):
     user_address: Mapped[str] = Column(String, ForeignKey('users.public_address'), primary_key=True)
     about: Mapped[str] = Column(String)
     image_url: Mapped[str] = Column(String)
+    cover_url: Mapped[str] = Column(String)
+    x_url: Mapped[str] = Column(String)
+    linkedin: Mapped[str] = Column(String)
+    website: Mapped[str] = Column(String)
+    bio: Mapped[str] = Column(String)
     user: Mapped["User"] = relationship("User", back_populates="usermetadata")
+
 
 
 class UserActivity(Base):
@@ -71,6 +78,7 @@ class Community(Base):
     token_address = Column(String)
     owner_token_address = Column(String)
     image = Column(String)
+    token_image = Column(String)
     token_price = Column(Float)  # Assuming token price is stored as a float
     token_buy_back_price = Column(Float)  # Assuming buy-back price is stored as a float
     total_token = Column(Integer)
@@ -99,7 +107,7 @@ class CommunityComments(Base):
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     community_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("community.id"))
     commented_by: Mapped[str] = mapped_column(String, ForeignKey("users.public_address"))
-    # commented_at: Mapped[DateTime] = Column(DateTime, default=func.now())
+    commented_at: Mapped[DateTime] = Column(DateTime, default=func.now())
     comment: Mapped[str] = mapped_column(String)
     community: Mapped["Community"] = relationship("Community", back_populates="community_comment")
 
@@ -115,20 +123,17 @@ class Proposal(Base):
     start_time = Column(Integer)
     ends_time = Column(Integer)
     minimum_quorum = Column(Integer)
-    proposal_address : Mapped[str] = mapped_column(String)
+    proposal_address: Mapped[str] = mapped_column(String)
 
 
 # Create an engine
 
 
 engine = create_engine(
-    'postgresql://pandao:uWiXQitw2j1fO08NIL1xLXaP4IllREQX@dpg-cqc8vg08fa8c73cldu50-a.oregon-postgres.render.com/pandao')
+    'postgresql://pandao_3d20_user:YBfkzu1vSG56hWn7rh1XyknvuiLz1M8H@dpg-cqci9vd6l47c73d58g5g-a.oregon-postgres.render.com/pandao_3d20')
 Base.metadata.create_all(engine)
 
 # Create a configured "Session" class
 Session = sessionmaker(bind=engine)
 # Create a Session
 dbsession = Session()
-
-
-

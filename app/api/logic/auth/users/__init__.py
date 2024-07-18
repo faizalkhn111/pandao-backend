@@ -2,7 +2,7 @@ from http.client import HTTPException
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 
 from models import dbsession as conn, User, UserMetaData
 from ....forms import UserLogin, UserSignupForm, UserProfileUpdate
@@ -65,22 +65,25 @@ def user_login_req(req: UserLogin):
 
 def get_user_detail(public_address: str):
     try:
-        stmt = (select(User.public_address, User.name, UserMetaData.about, UserMetaData.image_url)
-                .join(UserMetaData, User.public_address == UserMetaData.user_address)).where(User.public_address == public_address)
-        result = conn.execute(stmt).first()
-        if result is None:
-            return {
-                "status": 404,
-                "cause": "user with these credentials does not exist"
+        user = conn.query(User).options(joinedload(User.usermetadata)).filter(User.public_address == public_address).first()
+
+        if user:
+            # If user exists, convert to dictionary
+            user_dict = {
+                "name": user.name,
+                "public_address": user.public_address,
+                "last_login": str(user.last_login),
+                "usermetadata": {
+                    "about": user.usermetadata.about,
+                    "image_url": user.usermetadata.image_url,
+                    "cover_url": user.usermetadata.cover_url,
+                    "x_url": user.usermetadata.x_url,
+                    "linkedin": user.usermetadata.linkedin,
+                    "website": user.usermetadata.website,
+                    "bio": user.usermetadata.bio
+                }
             }
-        else:
-            pub_addr, name, about, img = result
-            return {
-                'public_address': pub_addr,
-                'name': name,
-                'about': about,
-                'image_url': img
-            }
+            return user_dict
 
     except Exception as e:
         conn.rollback()
@@ -123,10 +126,14 @@ def update_user_profile(req: UserProfileUpdate):
             user_meta_data.tiktok = req.tiktok
         if req.x_url is not None:
             user_meta_data.x_url = req.x_url
-        # if req.website_url is not None:
-        #     user_meta_data.website_url = req.website_url
+        if req.website_url is not None:
+            user_meta_data.website_url = req.website_url
         if req.linkedin is not None:
             user_meta_data.linkedin = req.linkedin
+        if req.cover_url is not None:
+            user_meta_data.cover_url = req.cover_url
+        if req.bio is not None:
+            user_meta_data.bio = req.bio
 
         conn.commit()
         conn.refresh(user_meta_data)
