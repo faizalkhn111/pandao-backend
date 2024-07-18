@@ -122,14 +122,11 @@ class Proposal(Base):
 
 
 engine = create_engine(
-    'postgresql://panda_db_zuex_user:2uM1W6yGSJ5OmArRbuQdKWe00lUK1BPd@dpg-cq7uk4jv2p9s73cbr6og-a.oregon-postgres.render.com/panda_db_zuex')
+    'postgresql://pandao:uWiXQitw2j1fO08NIL1xLXaP4IllREQX@dpg-cqc8vg08fa8c73cldu50-a.oregon-postgres.render.com/pandao')
 Base.metadata.create_all(engine)
 
 # Create a configured "Session" class
 Session = sessionmaker(bind=engine)
-
-
-
 # Create a Session
 dbsession = Session()
 
