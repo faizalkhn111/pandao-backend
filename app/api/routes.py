@@ -8,7 +8,7 @@ from .forms.community import CommunityParticipant, CommunityComment
 from .forms.transaction_manifest import TransactionSubmit
 # from .forms.blueprint import DeployCommunity
 from .logic import health as health_handler
-from .logic.activity.user_activity import get_user_activity, UserActivityModel
+from .logic.activity.user_activity import get_user_activity, UserActivityModel, get_community_activity
 from .logic.auth.users import user_login_req, user_sign_up, check_user_exist, get_user_detail, update_user_profile
 from .logic.blueprint import add_blueprint as add_blueprint_logic
 from .forms import *
@@ -37,6 +37,10 @@ def load_server(app):
     @app.post('/user/signup', status_code=status.HTTP_201_CREATED, tags=(['user-auth']))
     def user_signup_route(req: UserSignupForm):
         return user_sign_up(req)
+
+    @app.get('/user/activity', status_code=status.HTTP_201_CREATED, tags=(['user-auth']))
+    def get_user_activity_route(user_address: str, page: int = 1, page_size: int = 10):
+        return get_user_activity(user_address, page, page_size)
 
     @app.get('/user/check-signup/{public_address}', status_code=status.HTTP_200_OK, tags=(['user-auth']))
     def user_check_signup_route(public_address: str):
@@ -91,7 +95,7 @@ def load_server(app):
     @app.get('/activity/{community_id}', summary='get all the activity on the platform',
              description="get all the activity on the platform", tags=(['user-activity ']))
     def get_activity_route(community_id: uuid.UUID):
-        return get_user_activity(community_id)
+        return get_community_activity(community_id)
 
     @app.get('/community/check/user_status', summary="check if user is participant of community", tags=(['community']))
     def check_user_community_status_route(user_addr: str, community_id: uuid.UUID):
@@ -133,5 +137,3 @@ def load_server(app):
     @app.get('/community/proposal/active/{c_id}', summary="get community active proposal", tags=(['community']))
     def get_community_token_route(c_id: uuid.UUID):
         return get_community_active_proposal(c_id)
-
-
