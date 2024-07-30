@@ -178,7 +178,7 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 proposal_address = metadata['praposal_address']
                 proposal = conn.query(Proposal).filter(Proposal.proposal_address == proposal_address).first()
                 vote_againts = metadata['againts']
-                if vote_againts:
+                if vote_againts == 'true':
                     proposal.voted_against += float(metadata['voting_amount'])
                 else:
                     proposal.voted_for += float(metadata['voting_amount'])
