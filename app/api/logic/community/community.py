@@ -315,7 +315,7 @@ class CommentResponse(BaseModel):
     image_url: str
     public_address: str
     comment: str
-    # timestamp: float
+    timestamp: datetime
 
 
 def get_proposal_comment(proposal_id: uuid.UUID):
@@ -341,7 +341,7 @@ def get_proposal_comment(proposal_id: uuid.UUID):
             image_url=comment.image_url,
             public_address=comment.public_address,
             comment=comment.comment,
-            # timestamp=comment.timestamp
+            timestamp=comment.timestamp
         )
         for comment in comments
     ]
