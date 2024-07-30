@@ -6,10 +6,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
 from app.api.forms.blueprint import DeployCommunity
-from app.api.forms.community import CommunityComment
+from app.api.forms.community import CommunityComment, ProposalComment
 # from app.api.forms.blueprint import DeployCommunity
 from models import dbsession as conn, BluePrint, Community as Com, User, Participants, UserMetaData, CommunityComments, \
-    UserActivity, Community, CommunityToken, Proposal
+    UserActivity, Community, CommunityToken, Proposal, ProposalComments
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -50,19 +50,20 @@ def get_community():
             {
                 "component_address": community.component_address,
                 "id": community.id,
-                "blueprint_slug":community.blueprint_slug,
+                "blueprint_slug": community.blueprint_slug,
                 "owner_token_address": community.owner_token_address,
-                "token_price":community.token_price,
+                "token_price": community.token_price,
                 "total_token": community.total_token,
                 "owner_address": community.owner_address,
                 "name": community.name,
-                "number_of_participants":participant_count,
-                "image":community.image,
-                "funds":community.funds ,
-                "description":community.description
+                "number_of_participants": participant_count,
+                "image": community.image,
+                "funds": community.funds,
+                "description": community.description
             }
         )
     return response
+
 
 def get_user_community(user_addr: str):
     communities = conn.query(Com).join(
@@ -248,8 +249,8 @@ def add_community_comment(req: CommunityComment):
         activity = UserActivity(
             transaction_id=random_string,
             transaction_info=f'commented in {community_name}',
-            user_address=u_adr ,
-            community_id= c_id
+            user_address=u_adr,
+            community_id=c_id
         )
         conn.add(new_comment)
         conn.add(activity)
@@ -309,6 +310,76 @@ def get_community_metadata_details(community_id: uuid.UUID):
         pass
 
 
+class CommentResponse(BaseModel):
+    user_name: str
+    image_url: str
+    public_address: str
+    comment: str
+    # timestamp: float
+
+
+def get_proposal_comment(proposal_id: uuid.UUID):
+    comments = conn.execute(
+        select(
+            ProposalComments.comment,
+            ProposalComments.timestamp,
+            User.name,
+            UserMetaData.image_url,
+            User.public_address
+        ).join(
+            User, ProposalComments.user_id == User.public_address
+        ).join(
+            UserMetaData, User.public_address == UserMetaData.user_address
+        ).where(
+            ProposalComments.proposal_id == proposal_id
+        )
+    ).all()
+
+    result = [
+        CommentResponse(
+            user_name=comment.name,
+            image_url=comment.image_url,
+            public_address=comment.public_address,
+            comment=comment.comment,
+            # timestamp=comment.timestamp
+        )
+        for comment in comments
+    ]
+
+    return result
+
+
+class Praposalomment:
+    pass
+
+
+def add_proposal_comment(req: ProposalComment):
+    try:
+        new_comment = ProposalComments(
+            proposal_id=req.proposal_id,
+            comment=req.comment,
+            user_id=req.user_addr
+        )
+
+        conn.add(new_comment)
+        conn.commit()
+    except IntegrityError as e:
+        conn.rollback()
+
+        raise HTTPException(status_code=400,
+                            detail="Integrity error: possibly duplicate entry or foreign key constraint.")
+
+    except SQLAlchemyError as e:
+        conn.rollback()
+        print(e)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+    except Exception as e:
+        conn.rollback()
+        print(e)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
 def get_community_tokens(community_id: uuid.UUID):
     # Query the database for tokens owned by users in the community
     stmt = (
@@ -340,5 +411,5 @@ def get_community_tokens(community_id: uuid.UUID):
 
 
 def get_community_active_proposal(community_id: uuid.UUID):
-    proposal = conn.query(Proposal).filter(Proposal.community_id == community_id , Proposal.is_active == True ).first()
+    proposal = conn.query(Proposal).filter(Proposal.community_id == community_id, Proposal.is_active == True).first()
     return proposal

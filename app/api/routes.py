@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from starlette import status
 
 from .forms.blueprint import DeployCommunity
-from .forms.community import CommunityParticipant, CommunityComment
+from .forms.community import CommunityParticipant, CommunityComment, ProposalComment
 from .forms.transaction_manifest import TransactionSubmit
 # from .forms.blueprint import DeployCommunity
 from .logic import health as health_handler
@@ -17,7 +17,8 @@ from .logic.blueprint.blueprint import get_all_blueprints, get_blueprint
 from .logic.community import get_community
 from .logic.community.community import create_community, get_user_community, check_user_community_status, \
     user_participate_in_community, get_community_participants, get_community_comments, add_community_comment, \
-    get_single_community, get_community_metadata_details, get_community_tokens, get_community_active_proposal
+    get_single_community, get_community_metadata_details, get_community_tokens, get_community_active_proposal, \
+    get_proposal_comment, add_proposal_comment
 from .logic.event_listener import token_bucket_deploy_event_listener
 from .utils.presignsignature import generate_signature
 
@@ -137,3 +138,11 @@ def load_server(app):
     @app.get('/community/proposal/active/{c_id}', summary="get community active proposal", tags=(['community']))
     def get_community_token_route(c_id: uuid.UUID):
         return get_community_active_proposal(c_id)
+
+    @app.get('/community/proposal/comments/{proposal_id}', summary="get proposal comments", tags=(['community']))
+    def get_community_proposal_comment(proposal_id: uuid.UUID):
+        return get_proposal_comment(proposal_id)
+
+    @app.post('/community/proposal/comments', summary="add proposal comment", tags=(['community']))
+    def get_community_proposal_comment(req: ProposalComment):
+        return add_proposal_comment(req)

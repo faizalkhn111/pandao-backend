@@ -21,3 +21,9 @@ class CommunityComment(BaseModel):
     user_addr: str = Field(..., description="user address of the community")
     comment: str = Field(..., description="description of the community")
     community_id: uuid.UUID = Field(..., description="community id")
+
+
+class ProposalComment(BaseModel):
+    user_addr: str = Field(..., description="user address of the community")
+    comment: str = Field(..., description="description of the community")
+    proposal_id: uuid.UUID = Field(..., description="community id")

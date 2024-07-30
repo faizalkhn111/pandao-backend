@@ -87,7 +87,13 @@ class Community(Base):
     funds = Column(Float)
     community_comment: Mapped[list['CommunityComments']] = relationship("CommunityComments", back_populates="community")
 
-
+class ProposalComments(Base):
+    __tablename__ = 'proposal_comments'
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
+    proposal_id: Mapped[UUID] = mapped_column(ForeignKey('proposal.id'))
+    comment = Column(String)
+    user_id = Column(String, ForeignKey('users.public_address'))
+    timestamp : Mapped[DateTime] = Column(DateTime, default=func.now())
 class Participants(Base):
     __tablename__ = 'participants'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
