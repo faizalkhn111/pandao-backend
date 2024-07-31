@@ -17,10 +17,17 @@ class CommunityParticipant(BaseModel):
     participant_address: str = Field(..., description="participant id")
 
 
-class CommunityComment(BaseModel):
+class CommunityDiscussion(BaseModel):
     user_addr: str = Field(..., description="user address of the community")
-    comment: str = Field(..., description="description of the community")
+    discussion_title: str = Field(..., description="description of the community")
     community_id: uuid.UUID = Field(..., description="community id")
+
+
+class CommunityDiscussionComment(BaseModel):
+    user_addr: str = Field(..., description="user address of the community")
+    discussion_id: uuid.UUID = Field(..., description="discussion id")
+    comment: str = Field(..., description="comment")
+    image: str = Field(..., description="comment")
 
 
 class ProposalComment(BaseModel):

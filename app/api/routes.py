@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from starlette import status
 
 from .forms.blueprint import DeployCommunity
-from .forms.community import CommunityParticipant, CommunityComment, ProposalComment
+from .forms.community import CommunityParticipant, ProposalComment, CommunityDiscussion, CommunityDiscussionComment
 from .forms.transaction_manifest import TransactionSubmit
 # from .forms.blueprint import DeployCommunity
 from .logic import health as health_handler
@@ -18,7 +18,7 @@ from .logic.community import get_community
 from .logic.community.community import create_community, get_user_community, check_user_community_status, \
     user_participate_in_community, get_community_participants, get_community_comments, add_community_comment, \
     get_single_community, get_community_metadata_details, get_community_tokens, get_community_active_proposal, \
-    get_proposal_comment, add_proposal_comment
+    get_proposal_comment, add_proposal_comment, add_community_discussion_comment
 from .logic.event_listener import token_bucket_deploy_event_listener
 from .utils.presignsignature import generate_signature
 
@@ -115,12 +115,12 @@ def load_server(app):
     def get_community_participant_route(c_id: uuid.UUID):
         return get_community_participants(c_id)
 
-    @app.get('/community/comments/{c_id}', summary="get comments of user community", tags=(['community']))
-    def get_community_route(c_id: uuid.UUID):
+    @app.get('/community/discussion/{c_id}', summary="get comments of user community", tags=(['community']))
+    def get_discussion_route(c_id: uuid.UUID):
         return get_community_comments(c_id)
 
-    @app.post('/community/comment', summary='add comment on community', tags=(['community']))
-    def add_community_comment_route(req: CommunityComment):
+    @app.post('/community/discussion', summary='start a new discussion in community', tags=(['community']))
+    def add_community_discussion_route(req: CommunityDiscussion):
         return add_community_comment(req)
 
     @app.get('/community/detail/{c_id}', summary="get community detail", tags=(['community']))
@@ -146,3 +146,8 @@ def load_server(app):
     @app.post('/community/proposal/comments', summary="add proposal comment", tags=(['community']))
     def get_community_proposal_comment(req: ProposalComment):
         return add_proposal_comment(req)
+
+    @app.post('/community/discussion/comments', summary="add comment in community discussion", tags=(['community']))
+    def get_community_discussion_comment(req: CommunityDiscussionComment):
+        return  add_community_discussion_comment(req)
+

@@ -37,7 +37,6 @@ class UserMetaData(Base):
     user: Mapped["User"] = relationship("User", back_populates="usermetadata")
 
 
-
 class UserActivity(Base):
     __tablename__ = 'user_activity'
     transaction_id: Mapped[str] = Column(String, primary_key=True)
@@ -85,7 +84,8 @@ class Community(Base):
     token_bought = Column(Integer)
     owner_address = Column(String, ForeignKey('users.public_address'))
     funds = Column(Float)
-    community_comment: Mapped[list['CommunityComments']] = relationship("CommunityComments", back_populates="community")
+    # community_comment: Mapped[list['CommunityDiscussion']] = relationship("CommunityDiscussion", back_populates="community")
+
 
 class ProposalComments(Base):
     __tablename__ = 'proposal_comments'
@@ -93,7 +93,9 @@ class ProposalComments(Base):
     proposal_id: Mapped[UUID] = mapped_column(ForeignKey('proposal.id'))
     comment = Column(String)
     user_id = Column(String, ForeignKey('users.public_address'))
-    timestamp : Mapped[DateTime] = Column(DateTime, default=func.now())
+    timestamp: Mapped[DateTime] = Column(DateTime, default=func.now())
+
+
 class Participants(Base):
     __tablename__ = 'participants'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -108,14 +110,24 @@ class CommunityToken(Base):
     token_owned = Column(Float)
 
 
-class CommunityComments(Base):
-    __tablename__ = 'community_comments'
+class CommunityDiscussion(Base):
+    __tablename__ = 'community_discussions'
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     community_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("community.id"))
+    created_by: Mapped[str] = mapped_column(String, ForeignKey("users.public_address"))
+    created_at: Mapped[DateTime] = Column(DateTime, default=func.now())
+    title: Mapped[str] = mapped_column(String)
+    # community: Mapped["Community"] = relationship("Community", back_populates="community_discussions")
+
+
+class DiscussionComment(Base):
+    __tablename__ = 'discussion_comments'
+    id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    discussion_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("community_discussions.id"))
     commented_by: Mapped[str] = mapped_column(String, ForeignKey("users.public_address"))
-    commented_at: Mapped[DateTime] = Column(DateTime, default=func.now())
+    created_at: Mapped[DateTime] = Column(DateTime, default=func.now())
     comment: Mapped[str] = mapped_column(String)
-    community: Mapped["Community"] = relationship("Community", back_populates="community_comment")
+    image: Mapped[str] = mapped_column(String)
 
 
 class Proposal(Base):

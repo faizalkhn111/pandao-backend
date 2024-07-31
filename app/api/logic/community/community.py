@@ -6,10 +6,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
 from app.api.forms.blueprint import DeployCommunity
-from app.api.forms.community import CommunityComment, ProposalComment
+from app.api.forms.community import ProposalComment, CommunityDiscussionComment
 # from app.api.forms.blueprint import DeployCommunity
-from models import dbsession as conn, BluePrint, Community as Com, User, Participants, UserMetaData, CommunityComments, \
-    UserActivity, Community, CommunityToken, Proposal, ProposalComments
+from models import dbsession as conn, BluePrint, Community as Com, User, Participants, UserMetaData, \
+    UserActivity, Community, CommunityToken, Proposal, ProposalComments, CommunityDiscussion, DiscussionComment
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -202,18 +202,20 @@ def check_user_community_status(user_addr: str, community_id: uuid.UUID):
 
 def get_community_comments(c_id: uuid.UUID):
     # Join the tables
-    results = conn.query(CommunityComments.comment, User.name, UserMetaData.image_url, User.public_address).join(User,
-                                                                                                                 CommunityComments.commented_by == User.public_address).join(
+    results = conn.query(CommunityDiscussion.id, CommunityDiscussion.title, User.name, UserMetaData.image_url,
+                         User.public_address).join(User,
+                                                   CommunityDiscussion.created_by == User.public_address).join(
         UserMetaData, User.public_address == UserMetaData.user_address).filter(
-        CommunityComments.community_id == c_id).all()
+        CommunityDiscussion.community_id == c_id).all()
 
     # Format the response
     comments = [
         {
-            "comment": row.comment,
+            "title": row.title,
             "user_name": row.name,
             "user_image": row.image_url,
             "user_address": row.public_address,
+            "id": row.id
         }
         for row in results
     ]
@@ -226,16 +228,68 @@ def get_single_community(community_id: uuid.UUID):
     return communities
 
 
-def add_community_comment(req: CommunityComment):
+def add_community_discussion_comment(req: CommunityDiscussionComment):
+    try:
+        user_address = req.user_addr
+        discussion_id = req.discussion_id
+        comment = req.comment
+        image = req.image
+
+        new_comment = DiscussionComment(
+            discussion_id=discussion_id,
+            commented_by=user_address,
+            comment=comment,
+            image=image
+        )
+        # get user data and community data
+
+        # get community id
+        community = conn.query(DiscussionComment).filter(DiscussionComment.id == discussion_id).first()
+        random_string = generate_random_string()
+        community = conn.query(Community).filter(Community.id == community.id).first()
+        community_name = community.name
+        does_user_exist = conn.query(Participants).filter(Participants.community_id == community.id,
+                                                          Participants.user_addr == user_address).first()
+        if not does_user_exist:
+            raise HTTPException(status_code=401, detail="not a community participant")
+        # add comment activity
+        activity = UserActivity(
+            transaction_id=random_string,
+            transaction_info=f'created a new discussion in {community_name}',
+            user_address=u_adr,
+            community_id=c_id
+        )
+        conn.add(new_comment)
+        conn.add(activity)
+        conn.commit()
+
+    except IntegrityError as e:
+        conn.rollback()
+        print(e)
+        raise HTTPException(status_code=400,
+                            detail="Integrity error: possibly duplicate entry or foreign key constraint.")
+
+    except SQLAlchemyError as e:
+        conn.rollback()
+        print(e)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+    except Exception as e:
+        conn.rollback()
+        print(e)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+def add_community_comment(req: CommunityDiscussion):
     try:
         c_id = req.community_id
         u_adr = req.user_addr
-        c = req.comment
+        c = req.discussion_title
 
-        new_comment = CommunityComments(
+        new_comment = CommunityDiscussion(
             community_id=c_id,
-            commented_by=u_adr,
-            comment=c
+            created_by=u_adr,
+            title=c
         )
         # get user data and community data
         random_string = generate_random_string()
@@ -248,7 +302,7 @@ def add_community_comment(req: CommunityComment):
         # add comment activity
         activity = UserActivity(
             transaction_id=random_string,
-            transaction_info=f'commented in {community_name}',
+            transaction_info=f'created a new discussion in {community_name}',
             user_address=u_adr,
             community_id=c_id
         )
@@ -258,18 +312,18 @@ def add_community_comment(req: CommunityComment):
 
     except IntegrityError as e:
         conn.rollback()
-
+        print(e)
         raise HTTPException(status_code=400,
                             detail="Integrity error: possibly duplicate entry or foreign key constraint.")
 
     except SQLAlchemyError as e:
         conn.rollback()
-
+        print(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
     except Exception as e:
         conn.rollback()
-
+        print(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
