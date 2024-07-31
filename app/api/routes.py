@@ -115,7 +115,7 @@ def load_server(app):
     def get_community_participant_route(c_id: uuid.UUID):
         return get_community_participants(c_id)
 
-    @app.get('/community/discussion/{c_id}', summary="get comments of user community", tags=(['community']))
+    @app.get('/community/discussion/{c_id}', summary="get discussions of user community", tags=(['community']))
     def get_discussion_route(c_id: uuid.UUID):
         return get_community_comments(c_id)
 
