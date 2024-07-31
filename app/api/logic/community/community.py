@@ -1,7 +1,7 @@
 import uuid
 
 import requests
-from sqlalchemy import or_, select, func
+from sqlalchemy import or_, select, func, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
@@ -223,6 +223,35 @@ def get_community_comments(c_id: uuid.UUID):
     return comments
 
 
+def get_discussion_comments(d_id: uuid.UUID):
+    # Join the tables
+    results = (conn.query(DiscussionComment.comment, DiscussionComment.image, DiscussionComment.created_at, User.name,
+                         UserMetaData.image_url,
+                         User.public_address).join(User,
+                                                   DiscussionComment.created_by == User.public_address).join(
+        UserMetaData, User.public_address == UserMetaData.user_address).filter(
+        DiscussionComment.discussion_id == d_id)
+        .order_by(
+        desc(DiscussionComment.created_at)  # Order by created_at in descending order
+    )
+               .all())
+
+    # Format the response
+    comments = [
+        {
+            "comment": row.comment,
+            "user_name": row.name,
+            "user_image": row.image_url,
+            "user_address": row.public_address,
+            "created_at": row.created_at,
+            "image": row.image
+        }
+        for row in results
+    ]
+
+    return comments
+
+
 def get_single_community(community_id: uuid.UUID):
     communities = conn.query(Com).filter(Com.id == community_id).first()
     return communities
@@ -237,27 +266,27 @@ def add_community_discussion_comment(req: CommunityDiscussionComment):
 
         new_comment = DiscussionComment(
             discussion_id=discussion_id,
-            commented_by=user_address,
+            created_by=user_address,
             comment=comment,
             image=image
         )
         # get user data and community data
 
         # get community id
-        community = conn.query(DiscussionComment).filter(DiscussionComment.id == discussion_id).first()
+        discussion = conn.query(CommunityDiscussion).filter(CommunityDiscussion.id == discussion_id).first()
         random_string = generate_random_string()
-        community = conn.query(Community).filter(Community.id == community.id).first()
+        community = conn.query(Community).filter(Community.id == discussion.community_id).first()
         community_name = community.name
-        does_user_exist = conn.query(Participants).filter(Participants.community_id == community.id,
+        does_user_exist = conn.query(Participants).filter(Participants.community_id == discussion.community_id,
                                                           Participants.user_addr == user_address).first()
         if not does_user_exist:
             raise HTTPException(status_code=401, detail="not a community participant")
         # add comment activity
         activity = UserActivity(
             transaction_id=random_string,
-            transaction_info=f'created a new discussion in {community_name}',
-            user_address=u_adr,
-            community_id=c_id
+            transaction_info=f'added a new comment in {discussion.title}',
+            user_address=user_address,
+            community_id=discussion.community_id
         )
         conn.add(new_comment)
         conn.add(activity)

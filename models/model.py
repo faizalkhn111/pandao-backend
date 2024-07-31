@@ -124,7 +124,7 @@ class DiscussionComment(Base):
     __tablename__ = 'discussion_comments'
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     discussion_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("community_discussions.id"))
-    commented_by: Mapped[str] = mapped_column(String, ForeignKey("users.public_address"))
+    created_by: Mapped[str] = mapped_column(String, ForeignKey("users.public_address"))
     created_at: Mapped[DateTime] = Column(DateTime, default=func.now())
     comment: Mapped[str] = mapped_column(String)
     image: Mapped[str] = mapped_column(String)
