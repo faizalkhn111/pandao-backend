@@ -183,6 +183,13 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     proposal.voted_against += float(metadata['voting_amount'])
                 else:
                     proposal.voted_for += float(metadata['voting_amount'])
+
+                activity = UserActivity(
+                    transaction_id=tx_id,
+                    transaction_info=f'voted in ongoing proposal',
+                    user_address=user_address,
+                    community_id=proposal.community_id
+                )
                 conn.commit()
 
 
