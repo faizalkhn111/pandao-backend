@@ -202,7 +202,8 @@ def check_user_community_status(user_addr: str, community_id: uuid.UUID):
 
 def get_community_comments(c_id: uuid.UUID):
     # Join the tables
-    results = conn.query(CommunityDiscussion.id, CommunityDiscussion.title, User.name, UserMetaData.image_url,
+    results = conn.query(CommunityDiscussion.created_at, CommunityDiscussion.id, CommunityDiscussion.title, User.name,
+                         UserMetaData.image_url,
                          User.public_address).join(User,
                                                    CommunityDiscussion.created_by == User.public_address).join(
         UserMetaData, User.public_address == UserMetaData.user_address).filter(
@@ -215,7 +216,8 @@ def get_community_comments(c_id: uuid.UUID):
             "user_name": row.name,
             "user_image": row.image_url,
             "user_address": row.public_address,
-            "id": row.id
+            "id": row.id,
+            "created_at": row.created_at
         }
         for row in results
     ]
@@ -226,12 +228,12 @@ def get_community_comments(c_id: uuid.UUID):
 def get_discussion_comments(d_id: uuid.UUID):
     # Join the tables
     results = (conn.query(DiscussionComment.comment, DiscussionComment.image, DiscussionComment.created_at, User.name,
-                         UserMetaData.image_url,
-                         User.public_address).join(User,
-                                                   DiscussionComment.created_by == User.public_address).join(
+                          UserMetaData.image_url,
+                          User.public_address).join(User,
+                                                    DiscussionComment.created_by == User.public_address).join(
         UserMetaData, User.public_address == UserMetaData.user_address).filter(
         DiscussionComment.discussion_id == d_id)
-        .order_by(
+               .order_by(
         desc(DiscussionComment.created_at)  # Order by created_at in descending order
     )
                .all())
@@ -353,7 +355,7 @@ def add_community_comment(req: CommunityDiscussion):
     except Exception as e:
         conn.rollback()
         print(e)
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise e
 
 
 def get_community_metadata_details(community_id: uuid.UUID):
