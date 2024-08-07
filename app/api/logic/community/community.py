@@ -500,14 +500,24 @@ def get_community_active_proposal(community_id: uuid.UUID):
     return proposal
 
 
-def get_user_communities(user_addr: str):
+def get_user_communities(user_addr: str, owner: bool):
     try:
-        results = (
-            conn.query(Community.id, Community.name, Community.component_address, Community.image)
-            .join(Participants, Community.id == Participants.community_id)
-            .filter(Participants.user_addr == user_addr)
-            .all()
-        )
+        results = 0
+        if not owner:
+            results = (
+                conn.query(Community.id, Community.name, Community.component_address, Community.image)
+                .join(Participants, Community.id == Participants.community_id)
+                .filter(Participants.user_addr == user_addr)
+                .all()
+            )
+        else:
+            results = (
+                conn.query(Community.id, Community.name, Community.component_address, Community.image)
+                .join(Participants, Community.id == Participants.community_id)
+                .filter(Community.owner_address == user_addr)
+                .all()
+            )
+
         communities = [
             {
                 "community_id": row.id,

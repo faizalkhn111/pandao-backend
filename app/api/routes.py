@@ -63,8 +63,8 @@ def load_server(app):
     # get_user_communities
 
     @app.get('/user/community/{public_address}', status_code=status.HTTP_200_OK, tags=(['user-detail']))
-    def get_user_all_communities(public_address: str):
-        return get_user_communities(public_address)
+    def get_user_all_communities(public_address: str, owner: bool):
+        return get_user_communities(public_address, owner)
 
     # define routes for blueprints
 
