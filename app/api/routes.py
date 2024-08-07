@@ -18,7 +18,8 @@ from .logic.community import get_community
 from .logic.community.community import create_community, get_user_community, check_user_community_status, \
     user_participate_in_community, get_community_participants, get_community_comments, add_community_comment, \
     get_single_community, get_community_metadata_details, get_community_tokens, get_community_active_proposal, \
-    get_proposal_comment, add_proposal_comment, add_community_discussion_comment, get_discussion_comments
+    get_proposal_comment, add_proposal_comment, add_community_discussion_comment, get_discussion_comments, \
+    get_user_communities
 from .logic.event_listener import token_bucket_deploy_event_listener
 from .utils.presignsignature import generate_signature
 
@@ -58,6 +59,12 @@ def load_server(app):
     @app.post('/user/login', status_code=status.HTTP_201_CREATED, tags=(['user-auth']))
     def register(req: UserLogin):
         return user_login_req(req)
+
+    # get_user_communities
+
+    @app.get('/user/community/{public_address}', status_code=status.HTTP_200_OK, tags=(['user-detail']))
+    def get_user_all_communities(public_address: str):
+        return get_user_communities(public_address)
 
     # define routes for blueprints
 
@@ -149,9 +156,9 @@ def load_server(app):
 
     @app.post('/community/discussion/comments', summary="add comment in community discussion", tags=(['community']))
     def get_community_discussion_comment(req: CommunityDiscussionComment):
-        return  add_community_discussion_comment(req)
+        return add_community_discussion_comment(req)
 
-    @app.get('/community/discussion/comments/{discussion_id}', summary="get community discussion comments", tags=(['community']))
+    @app.get('/community/discussion/comments/{discussion_id}', summary="get community discussion comments",
+             tags=(['community']))
     def get_community_proposal_comment(discussion_id: uuid.UUID):
         return get_discussion_comments(discussion_id)
-

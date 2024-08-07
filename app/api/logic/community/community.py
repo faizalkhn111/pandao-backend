@@ -498,3 +498,33 @@ def get_community_tokens(community_id: uuid.UUID):
 def get_community_active_proposal(community_id: uuid.UUID):
     proposal = conn.query(Proposal).filter(Proposal.community_id == community_id, Proposal.is_active == True).first()
     return proposal
+
+
+def get_user_communities(user_addr: str):
+    try:
+        results = (
+            conn.query(Community.id, Community.name, Community.component_address, Community.image)
+            .join(Participants, Community.id == Participants.community_id)
+            .filter(Participants.user_addr == user_addr)
+            .all()
+        )
+        communities = [
+            {
+                "community_id": row.id,
+                "community_name": row.name,
+                "component_address": row.component_address,
+                "community_image": row.image
+
+            }
+            for row in results
+        ]
+
+        return communities
+    except SQLAlchemyError as e:
+        conn.rollback()
+        print(e)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    except Exception as e:
+        conn.rollback()
+        print(e)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
