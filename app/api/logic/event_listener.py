@@ -191,6 +191,18 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     community_id=proposal.community_id
                 )
                 conn.commit()
+            elif resources['event_type'] == 'EXECUTE_PROPOSAL':
+                proposal_address = resources['component_address']
+                proposal_address = metadata['praposal_address']
+                proposal = conn.query(Proposal).filter(Proposal.proposal_address == proposal_address).first()
+                proposal.is_active = False
+                activity = UserActivity(
+                    transaction_id=tx_id,
+                    transaction_info=f'executed a proposal',
+                    user_address=user_address,
+                    community_id=proposal.community_id
+                )
+                conn.commit()
 
 
         except SQLAlchemyError as e:
