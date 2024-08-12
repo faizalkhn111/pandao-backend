@@ -334,9 +334,7 @@ def add_community_discussion_comment(req: CommunityDiscussionComment):
 
     except Exception as e:
         conn.rollback()
-        print(e)
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-
+        return e
 
 def add_community_comment(req: CommunityDiscussion):
     try:
