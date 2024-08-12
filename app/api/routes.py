@@ -19,7 +19,7 @@ from .logic.community.community import create_community, get_user_community, che
     user_participate_in_community, get_community_participants, get_community_comments, add_community_comment, \
     get_single_community, get_community_metadata_details, get_community_tokens, get_community_active_proposal, \
     get_proposal_comment, add_proposal_comment, add_community_discussion_comment, get_discussion_comments, \
-    get_user_communities
+    get_user_communities, get_all_community_of_platform
 from .logic.event_listener import token_bucket_deploy_event_listener
 from .utils.presignsignature import generate_signature
 
@@ -84,6 +84,10 @@ def load_server(app):
              tags=(['community']))
     def get_community_route():
         return get_community()
+
+    @app.get('/community/all', summary="get all community of platform", description="get_all_community_of_platform")
+    def get_all_communities():
+        get_all_community_of_platform()
 
     @app.get('/community/{user_addr}', summary="get communities iof user ",
              description="get communities of user", tags=(['community']))
