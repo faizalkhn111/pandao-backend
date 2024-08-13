@@ -35,6 +35,7 @@ class DeployProposal(BaseModel):
     end_time: str = Field(..., description="end time of praposal")
     proposal: str = Field(..., description="proposal")
     userAddress: str = Field(..., description="user address")
+    description: str = Field(..., description="description")
 
 
 class ProposalVote(BaseModel):

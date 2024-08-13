@@ -185,6 +185,7 @@ def transaction_manifest_routes(app):
                                     Address("{community.component_address}")
                                     "create_praposal"
                                     "{req.proposal}"
+                                    "{req.description}"
                                     {req.minimumquorum}u8
                                     Tuple(
                                     {start_year}u32 ,
