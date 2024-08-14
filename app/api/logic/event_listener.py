@@ -73,6 +73,8 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     funds=0,
                     token_bought=0
                 )
+                conn.add(community)
+                conn.commit()
 
                 # create user activity
                 participant = Participants(
@@ -101,7 +103,6 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     user_address=user_address,
                     community_id=community_id
                 )
-                conn.add(community)
                 conn.add(activity)
                 conn.commit()
             elif resources['event_type'] == 'TOKEN_BOUGHT':
@@ -177,8 +178,8 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     proposal=metadata['title'],
                     description=metadata['description'],
                     community_id=community.id,
-                    voted_for=metadata['voted_for'],
-                    voted_against=metadata['voted_againt'],
+                    voted_for=0,
+                    voted_against=0,
                     is_active=True,
                     start_time=metadata['start_time_ts'],
                     ends_time=metadata['end_time_ts'],
