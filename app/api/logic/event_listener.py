@@ -154,7 +154,8 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 # get community names and detail
                 community = conn.query(Community).filter(Community.component_address == community_address).first()
                 new_proposal = Proposal(
-                    proposal=metadata['current_praposal'],
+                    proposal=metadata['title'],
+                    description=metadata['description'],
                     community_id=community.id,
                     voted_for=metadata['voted_for'],
                     voted_against=metadata['voted_againt'],

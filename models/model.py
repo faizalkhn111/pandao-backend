@@ -134,6 +134,7 @@ class Proposal(Base):
     __tablename__ = 'proposal'
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     proposal: Mapped[str] = mapped_column(String)
+    description: Mapped[str] = mapped_column(String)
     community_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("community.id"))
     voted_for = Column(Float)
     voted_against = Column(Float)
