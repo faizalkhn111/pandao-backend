@@ -5,7 +5,8 @@ from fastapi import HTTPException
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 
-from models import Community, dbsession as conn, UserActivity, CommunityToken, Proposal
+from app.api.logic.community.community import generate_random_string
+from models import Community, dbsession as conn, UserActivity, CommunityToken, Proposal, Participants
 
 
 ## pending , add logger
@@ -74,6 +75,25 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 )
 
                 # create user activity
+                participant = Participants(
+                    user_addr=user_address,
+                    community_id=community_id,
+
+                )
+                conn.add(participant)
+                conn.commit()
+
+                community = conn.query(Community).filter(Community.id == community_id).first()
+                community_name = community.name
+                random_string = generate_random_string()
+                # add comment activity
+                participate_activity = UserActivity(
+                    transaction_id=random_string,
+                    transaction_info=f'participated in {community_name}',
+                    user_address=user_address,
+                    community_id=community_id
+                )
+                conn.add(participate_activity)
 
                 activity = UserActivity(
                     transaction_id=tx_id,
