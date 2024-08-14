@@ -36,12 +36,21 @@ def generate_random_string(length=12):
     return random_string
 
 
-def get_community():
-    communities_with_participants = conn.query(Community, func.count(Participants.id).label('participants_count')) \
+def get_community(sort:str):
+    query = conn.query(Community, func.count(Participants.id).label('participants_count')) \
         .outerjoin(Participants, Community.id == Participants.community_id) \
-        .order_by(func.count(Participants.id).desc()) \
         .group_by(Community.id) \
-        .limit(6)
+
+
+    if sort == 'participants':
+        query = query.order_by(func.count(Participants.id).desc())
+    elif sort == 'funds':
+        query = query.order_by(Community.funds.desc())
+    elif sort == 'name':
+        query = query.order_by(Community.name.desc())
+
+
+    communities_with_participants = query.limit(6).all()
 
     # Now you can iterate over the result
     response = []
@@ -65,12 +74,23 @@ def get_community():
     return response
 
 
-def get_all_community_of_platform():
-    communities_with_participants = conn.query(Community, func.count(Participants.id).label('participants_count')) \
+def get_all_community_of_platform(sort:str):
+    query = conn.query(Community, func.count(Participants.id).label('participants_count')) \
         .outerjoin(Participants, Community.id == Participants.community_id) \
-        .order_by(func.count(Participants.id).desc()) \
         .group_by(Community.id) \
 
+
+    if sort == 'participants':
+        query = query.order_by(func.count(Participants.id).desc())
+    elif sort == 'funds':
+        query = query.order_by(Community.funds.desc())
+    elif sort == 'name':
+        query = query.order_by(Community.name.desc())
+
+
+    communities_with_participants = query.limit(1000).all()
+
+    # Now you can iterate over the result
     # Now you can iterate over the result
     response = []
     for community, participant_count in communities_with_participants:
