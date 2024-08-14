@@ -1,7 +1,7 @@
 import uuid
 
 import requests
-from sqlalchemy import or_, select, func, desc
+from sqlalchemy import or_, select, func, desc, distinct
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
@@ -36,11 +36,10 @@ def generate_random_string(length=12):
     return random_string
 
 
-def get_community(sort:str):
+def get_community(sort: str):
     query = conn.query(Community, func.count(Participants.id).label('participants_count')) \
         .outerjoin(Participants, Community.id == Participants.community_id) \
         .group_by(Community.id) \
-
 
     if sort == 'participants':
         query = query.order_by(func.count(Participants.id).desc())
@@ -48,7 +47,6 @@ def get_community(sort:str):
         query = query.order_by(Community.funds.desc())
     elif sort == 'name':
         query = query.order_by(Community.name.desc())
-
 
     communities_with_participants = query.limit(6).all()
 
@@ -74,11 +72,10 @@ def get_community(sort:str):
     return response
 
 
-def get_all_community_of_platform(sort:str):
+def get_all_community_of_platform(sort: str):
     query = conn.query(Community, func.count(Participants.id).label('participants_count')) \
         .outerjoin(Participants, Community.id == Participants.community_id) \
         .group_by(Community.id) \
-
 
     if sort == 'participants':
         query = query.order_by(func.count(Participants.id).desc())
@@ -86,7 +83,6 @@ def get_all_community_of_platform(sort:str):
         query = query.order_by(Community.funds.desc())
     elif sort == 'name':
         query = query.order_by(Community.name.desc())
-
 
     communities_with_participants = query.limit(1000).all()
 
@@ -111,6 +107,7 @@ def get_all_community_of_platform(sort:str):
             }
         )
     return response
+
 
 def get_user_community(user_addr: str):
     communities = conn.query(Com).join(
@@ -356,6 +353,7 @@ def add_community_discussion_comment(req: CommunityDiscussionComment):
         conn.rollback()
         return e
 
+
 def add_community_comment(req: CommunityDiscussion):
     try:
         c_id = req.community_id
@@ -547,12 +545,12 @@ def get_community_active_proposal(community_id: uuid.UUID):
 
 def get_user_communities(user_addr: str, owner: bool):
     try:
-        results = 0
         if not owner:
             results = (
                 conn.query(Community.id, Community.name, Community.component_address, Community.image)
                 .join(Participants, Community.id == Participants.community_id)
                 .filter(Participants.user_addr == user_addr)
+                .distinct(Community.id)
                 .all()
             )
         else:
@@ -560,6 +558,7 @@ def get_user_communities(user_addr: str, owner: bool):
                 conn.query(Community.id, Community.name, Community.component_address, Community.image)
                 .join(Participants, Community.id == Participants.community_id)
                 .filter(Community.owner_address == user_addr)
+                .distinct(Community.id)
                 .all()
             )
 
@@ -578,8 +577,8 @@ def get_user_communities(user_addr: str, owner: bool):
     except SQLAlchemyError as e:
         conn.rollback()
         print(e)
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="dssdrror")
     except Exception as e:
         conn.rollback()
         print(e)
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail="Internal Servesvsvsvsdvr Error")
