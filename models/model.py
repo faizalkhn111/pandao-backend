@@ -149,8 +149,9 @@ class Proposal(Base):
 
 
 engine = create_engine(
-    'postgresql://pandao_3d20_user:YBfkzu1vSG56hWn7rh1XyknvuiLz1M8H@dpg-cqci9vd6l47c73d58g5g-a.oregon-postgres.render.com/pandao_3d20')
+    'postgresql://pandao_10ar_user:ltYCwGSVPu9NRGQsdEwrm2lReTVC9wpD@dpg-cqud8jrv2p9s73d616fg-a.oregon-postgres.render.com/pandao_10ar')
 Base.metadata.create_all(engine)
+
 
 # Create a configured "Session" class
 Session = sessionmaker(bind=engine)

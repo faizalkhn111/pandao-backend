@@ -572,7 +572,6 @@ def get_user_communities(user_addr: str, owner: bool):
             }
             for row in results
         ]
-
         return communities
     except SQLAlchemyError as e:
         conn.rollback()
