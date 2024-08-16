@@ -72,7 +72,7 @@ def get_community(sort: str):
     return response
 
 
-def get_all_community_of_platform(sort: str):
+def get_all_community_of_platform(sort: str, Community):
     query = conn.query(Community, func.count(Participants.id).label('participants_count')) \
         .outerjoin(Participants, Community.id == Participants.community_id) \
         .group_by(Community.id) \
@@ -82,7 +82,7 @@ def get_all_community_of_platform(sort: str):
     elif sort == 'funds':
         query = query.order_by(Community.funds.desc())
     elif sort == 'name':
-        query = query.order_by(Community.name.desc())
+        query = query.order_by(Community.name.asc())
 
     communities_with_participants = query.limit(1000).all()
 
