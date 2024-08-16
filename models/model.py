@@ -147,13 +147,15 @@ class Proposal(Base):
 
 class Blog(Base):
     __tablename__ = 'blogs'
-    id : Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String, nullable=False)
     description: Mapped[str] = mapped_column(String)
     thumbnail_image = Column(String, nullable=True)
-    created_at : Mapped[DateTime] = Column(DateTime, default=func.now())
+    created_at: Mapped[DateTime] = Column(DateTime, default=func.now())
     published_by = Column(String, nullable=False)
-    blog_link =  Column(String, nullable=True)
+
+
+# blog_link =  Column(String, nullable=True)
 
 
 # Create an engine
@@ -167,5 +169,3 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 # Create a Session
 dbsession = Session()
-
-
