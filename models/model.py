@@ -153,6 +153,7 @@ class Blog(Base):
     thumbnail_image = Column(String, nullable=True)
     created_at : Mapped[DateTime] = Column(DateTime, default=func.now())
     published_by = Column(String, nullable=False)
+    blog_link =  Column(String, nullable=True)
 
 
 # Create an engine
@@ -166,3 +167,5 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 # Create a Session
 dbsession = Session()
+
+

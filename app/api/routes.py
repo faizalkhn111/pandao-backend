@@ -90,7 +90,7 @@ def load_server(app):
     @app.get('/community/all', summary="get all community of platform", description="get_all_community_of_platform",
              tags=(['community']))
     def get_all_communities(sort: str = 'participants'):
-        return get_all_community_of_platform(sort)
+        return get_all_community_of_platform(sort )
 
     @app.get('/community/{user_addr}', summary="get communities iof user ",
              description="get communities of user", tags=(['community']))
