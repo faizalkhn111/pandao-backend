@@ -46,7 +46,7 @@ def get_community(sort: str):
     elif sort == 'funds':
         query = query.order_by(Community.funds.desc())
     elif sort == 'name':
-        query = query.order_by(Community.name.desc())
+        query = query.order_by(Community.name.asc())
 
     communities_with_participants = query.limit(6).all()
 
