@@ -3,6 +3,7 @@ import uuid
 from fastapi import FastAPI
 from starlette import status
 
+from .forms.blogs import BlogCreate
 from .forms.blueprint import DeployCommunity
 from .forms.community import CommunityParticipant, ProposalComment, CommunityDiscussion, CommunityDiscussionComment
 from .forms.transaction_manifest import TransactionSubmit
@@ -10,6 +11,7 @@ from .forms.transaction_manifest import TransactionSubmit
 from .logic import health as health_handler
 from .logic.activity.user_activity import get_user_activity, UserActivityModel, get_community_activity
 from .logic.auth.users import user_login_req, user_sign_up, check_user_exist, get_user_detail, update_user_profile
+from .logic.blogs.blogs import add_blogs, get_blogs
 from .logic.blueprint import add_blueprint as add_blueprint_logic
 from .forms import *
 from .logic.blueprint.blueprint import get_all_blueprints, get_blueprint
@@ -167,3 +169,12 @@ def load_server(app):
              tags=(['community']))
     def get_community_proposal_comment(discussion_id: uuid.UUID):
         return get_discussion_comments(discussion_id)
+
+    @app.post('/blogs', summary="insert blogs into pandao",
+              tags=(['blogs']))
+    def get_community_proposal_comment(req: BlogCreate):
+        return add_blogs(req)
+
+    @app.get('/blogs',summary="get all the blogs in pandao" , tags=(['blogs']))
+    def get_community():
+        return get_blogs()

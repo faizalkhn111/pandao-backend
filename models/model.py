@@ -145,13 +145,22 @@ class Proposal(Base):
     proposal_address: Mapped[str] = mapped_column(String)
 
 
+class Blog(Base):
+    __tablename__ = 'blogs'
+    id : Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title = Column(String, nullable=False)
+    description: Mapped[str] = mapped_column(String)
+    thumbnail_image = Column(String, nullable=True)
+    created_at : Mapped[DateTime] = Column(DateTime, default=func.now())
+    published_by = Column(String, nullable=False)
+
+
 # Create an engine
 
 
 engine = create_engine(
     'postgresql://pandao_10ar_user:ltYCwGSVPu9NRGQsdEwrm2lReTVC9wpD@dpg-cqud8jrv2p9s73d616fg-a.oregon-postgres.render.com/pandao_10ar')
 Base.metadata.create_all(engine)
-
 
 # Create a configured "Session" class
 Session = sessionmaker(bind=engine)
