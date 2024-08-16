@@ -176,5 +176,5 @@ def load_server(app):
         return add_blogs(req)
 
     @app.get('/blogs',summary="get all the blogs in pandao" , tags=(['blogs']))
-    def get_community():
+    def get_blogs_route():
         return get_blogs()
