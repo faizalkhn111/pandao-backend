@@ -11,6 +11,9 @@ class UserSignupForm(BaseModel):
     username: str = Field(..., description=" user username")
     display_image: str = Field(..., description=" user display image")
     about: str = Field(..., description=" user about this user")
+    image_url: Optional[str] = Field(None, description="User updated image URL")
+    bio: Optional[str] = Field(None, description="User cover url")
+    tags: list[str] = Field(None, description="community tags that user likes")
 
 
 class UserLogin(BaseModel):
@@ -27,4 +30,3 @@ class UserProfileUpdate(BaseModel):
     tiktok: Optional[str] = Field(None, description="User updated TikTok URL")
     cover_url: Optional[str] = Field(None, description="User cover url")
     bio: Optional[str] = Field(None, description="User cover url")
-

@@ -474,6 +474,9 @@ def get_proposal_comment(proposal_id: uuid.UUID):
         for comment in comments
     ]
 
+    if result is None:
+        return []
+
     return result
 
 

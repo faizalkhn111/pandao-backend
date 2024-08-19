@@ -23,7 +23,8 @@ def user_sign_up(signup: UserSignupForm):
         usermetadata = UserMetaData(
             user_address=signup.public_address,
             about=signup.about,
-            image_url=signup.display_image
+            image_url=signup.display_image,
+            bio=signup.bio,
         )
         user.usermetadata = usermetadata
         conn.add(user)
@@ -65,7 +66,8 @@ def user_login_req(req: UserLogin):
 
 def get_user_detail(public_address: str):
     try:
-        user = conn.query(User).options(joinedload(User.usermetadata)).filter(User.public_address == public_address).first()
+        user = conn.query(User).options(joinedload(User.usermetadata)).filter(
+            User.public_address == public_address).first()
 
         if user:
             # If user exists, convert to dictionary
