@@ -383,6 +383,7 @@ def add_community_comment(req: CommunityDiscussion):
         conn.add(new_comment)
         conn.add(activity)
         conn.commit()
+        return new_comment
 
     except IntegrityError as e:
         conn.rollback()
@@ -494,6 +495,7 @@ def add_proposal_comment(req: ProposalComment):
 
         conn.add(new_comment)
         conn.commit()
+        return new_comment
     except IntegrityError as e:
         conn.rollback()
 
