@@ -3,6 +3,7 @@ import uuid
 from fastapi import FastAPI
 from starlette import status
 
+
 from .forms.blogs import BlogCreate
 from .forms.blueprint import DeployCommunity
 from .forms.community import CommunityParticipant, ProposalComment, CommunityDiscussion, CommunityDiscussionComment
@@ -23,15 +24,26 @@ from .logic.community.community import create_community, get_user_community, che
     get_proposal_comment, add_proposal_comment, add_community_discussion_comment, get_discussion_comments, \
     get_user_communities, get_all_community_of_platform
 from .logic.event_listener import token_bucket_deploy_event_listener
+from .logic.health import pre_define_data
+from .logic.tags import get_all_tags_query
 from .utils.presignsignature import generate_signature
 
 
 def load_server(app):
     # defines routes
 
+    @app.post('/run/predefine-query',tags=["system-apis"],description='add predefine data')
+    def run_predefine_query():
+        pre_define_data()
+
     @app.get('/')
     def health_check():
         return health_handler()
+
+    # define public apis here
+    @app.get('/tags', tags=(['TAGS']), description="get all tags from the platform")
+    def get_all_tags():
+        return get_all_tags_query()
 
     @app.get("/image-upload/signature", tags=(['presign-url']))
     def get_image_upload_signature_route():
@@ -90,7 +102,7 @@ def load_server(app):
     @app.get('/community/all', summary="get all community of platform", description="get_all_community_of_platform",
              tags=(['community']))
     def get_all_communities(sort: str = 'participants'):
-        return get_all_community_of_platform(sort )
+        return get_all_community_of_platform(sort)
 
     @app.get('/community/{user_addr}', summary="get communities iof user ",
              description="get communities of user", tags=(['community']))
@@ -175,6 +187,6 @@ def load_server(app):
     def get_community_proposal_comment(req: BlogCreate):
         return add_blogs(req)
 
-    @app.get('/blogs',summary="get all the blogs in pandao" , tags=(['blogs']))
+    @app.get('/blogs', summary="get all the blogs in pandao", tags=(['blogs']))
     def get_blogs_route():
         return get_blogs()

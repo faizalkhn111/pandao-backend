@@ -1,18 +1,12 @@
 from idlelib.pyparse import trans
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, Boolean, Enum, DECIMAL, Float, text
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, Boolean, Enum, DECIMAL, Float, \
+    func, PrimaryKeyConstraint
 from sqlalchemy.orm import relationship, sessionmaker, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from enum import Enum as PYENUM
-from typing import List
-from typing import Optional
-from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
-from sqlalchemy.sql import func
-
-Base = declarative_base()
+from .engine import Base
 
 
 class User(Base):
@@ -27,14 +21,42 @@ class User(Base):
 class UserMetaData(Base):
     __tablename__ = 'user_meta_data'
     user_address: Mapped[str] = Column(String, ForeignKey('users.public_address'), primary_key=True)
+    # about is a detail version about user details
     about: Mapped[str] = Column(String)
     image_url: Mapped[str] = Column(String)
     cover_url: Mapped[str] = Column(String)
     x_url: Mapped[str] = Column(String)
     linkedin: Mapped[str] = Column(String)
     website: Mapped[str] = Column(String)
+    tiktok: Mapped[str] = Column(String)
+    # bio is short description about user detail
     bio: Mapped[str] = Column(String)
+    address: Mapped[str] = Column(String)
     user: Mapped["User"] = relationship("User", back_populates="usermetadata")
+
+
+class UserWork(Base):
+    __tablename__ = 'user_work'
+    id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_address: Mapped[str] = Column(String, ForeignKey('users.public_address'))
+    company: Mapped[str] = Column(String, nullable=False)
+    from_date: Mapped[DateTime] = Column(DateTime)
+    to_date: Mapped[DateTime] = Column(DateTime)
+    designation: Mapped[str] = Column(String, nullable=False)
+    description: Mapped[str] = Column(String, nullable=False)
+
+
+class Tag(Base):
+    __tablename__ = 'tags'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False, unique=True)
+
+
+class UserPreference(Base):
+    __tablename__ = 'user_preference'
+    user_address: Mapped[str] = Column(String, ForeignKey('users.public_address'))
+    tag: Mapped[str] = Column(String, nullable=False)
+    __table_args__ = (PrimaryKeyConstraint('user_address', 'tag'),)
 
 
 class UserActivity(Base):
@@ -84,7 +106,8 @@ class Community(Base):
     token_bought = Column(Integer)
     owner_address = Column(String, ForeignKey('users.public_address'))
     funds = Column(Float)
-    # community_comment: Mapped[list['CommunityDiscussion']] = relationship("CommunityDiscussion", back_populates="community")
+    # community_comment: Mapped[list['CommunityDiscussion']] = relationship("CommunityDiscussion",
+    # back_populates="community")
 
 
 class ProposalComments(Base):
@@ -155,17 +178,6 @@ class Blog(Base):
     published_by = Column(String, nullable=False)
 
 
-# blog_link =  Column(String, nullable=True)
+from .engine import engine
 
-
-# Create an engine
-
-
-engine = create_engine(
-    'postgresql://pandao_10ar_user:ltYCwGSVPu9NRGQsdEwrm2lReTVC9wpD@dpg-cqud8jrv2p9s73d616fg-a.oregon-postgres.render.com/pandao_10ar')
 Base.metadata.create_all(engine)
-
-# Create a configured "Session" class
-Session = sessionmaker(bind=engine)
-# Create a Session
-dbsession = Session()

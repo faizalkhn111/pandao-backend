@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload, joinedload
 
-from models import dbsession as conn, User, UserMetaData
+from models import dbsession as conn, User, UserMetaData, UserPreference, UserWork
 from ....forms import UserLogin, UserSignupForm, UserProfileUpdate
 from ....utils import ApiError
 import logging
@@ -22,12 +22,32 @@ def user_sign_up(signup: UserSignupForm):
         # create user meta data
         usermetadata = UserMetaData(
             user_address=signup.public_address,
-            about=signup.about,
-            image_url=signup.display_image,
             bio=signup.bio,
+            image_url=signup.display_image,
         )
         user.usermetadata = usermetadata
         conn.add(user)
+
+        # try to iter through tags that user send
+
+        for t in signup.tags:
+            preference = UserPreference(
+                user_address=signup.public_address,
+                tag=t
+            )
+            conn.add(preference)
+
+        for w_h in signup.work_history:
+            u_wh = UserWork(
+                company=w_h.company_name,
+                designation=w_h.designation,
+                description=w_h.description,
+                from_date=w_h.start_date,
+                to_date=w_h.end_date,
+                user_address=signup.public_address,
+            )
+            conn.add(u_wh)
+
         conn.commit()
         return {
             "status": 201,
@@ -70,6 +90,8 @@ def get_user_detail(public_address: str):
             User.public_address == public_address).first()
 
         if user:
+            # get user work history
+            user_wh = conn.query(UserWork).filter(UserWork.user_address == user.public_address).all()
             # If user exists, convert to dictionary
             user_dict = {
                 "name": user.name,
@@ -83,8 +105,10 @@ def get_user_detail(public_address: str):
                     "linkedin": user.usermetadata.linkedin,
                     "website": user.usermetadata.website,
                     "bio": user.usermetadata.bio
-                }
+                },
+                "user_work": user_wh
             }
+
             return user_dict
 
     except Exception as e:
