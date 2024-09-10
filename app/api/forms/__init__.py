@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import field
 from datetime import datetime
 
@@ -13,7 +14,7 @@ from enum import Enum
 class UserWorkHistory(BaseModel):
     company_name: str = Field(..., description="name of the company")
     start_date: datetime = Field(..., description="start date")
-    end_date: datetime = Field(..., description="start date, send null if currently working here")
+    end_date: Optional[datetime] = Field(..., description="start date, send null if currently working here")
     designation: str = Field(..., description="designation of user")
     description: str = Field(..., description="description of the work")
 
@@ -24,7 +25,7 @@ class UserSignupForm(BaseModel):
     display_image: str = Field(..., description="user display image")
     bio: Optional[str] = Field(None, description="User cover url")
     tags: list[str] = Field(None, description="community tags that user likes")
-    work_history: list[UserWorkHistory] = Field(None, description="community tags that user likes")
+    work_history: Optional[list[UserWorkHistory]] = Field(None, description="community tags that user likes")
 
 
 class UserLogin(BaseModel):
@@ -41,3 +42,12 @@ class UserProfileUpdate(BaseModel):
     tiktok: Optional[str] = Field(None, description="User updated TikTok URL")
     cover_url: Optional[str] = Field(None, description="User cover url")
     bio: Optional[str] = Field(None, description="User cover url")
+
+
+class UserWorkHistoryUpdate(BaseModel):
+    id: uuid.UUID = Field(..., description="user work history id")
+    company_name: str = Field(..., description="name of the company")
+    start_date: datetime = Field(..., description="start date")
+    end_date: Optional[datetime] = Field(..., description="start date, send null if currently working here")
+    designation: str = Field(..., description="designation of user")
+    description: str = Field(..., description="description of the work")

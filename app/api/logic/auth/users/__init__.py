@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload, joinedload
 
 from models import dbsession as conn, User, UserMetaData, UserPreference, UserWork
-from ....forms import UserLogin, UserSignupForm, UserProfileUpdate
+from ....forms import UserLogin, UserSignupForm, UserProfileUpdate, UserWorkHistoryUpdate
 from ....utils import ApiError
 import logging
 
@@ -30,24 +30,24 @@ def user_sign_up(signup: UserSignupForm):
 
         # try to iter through tags that user send
 
+        # tags will always present
         for t in signup.tags:
             preference = UserPreference(
                 user_address=signup.public_address,
                 tag=t
             )
             conn.add(preference)
-
-        for w_h in signup.work_history:
-            u_wh = UserWork(
-                company=w_h.company_name,
-                designation=w_h.designation,
-                description=w_h.description,
-                from_date=w_h.start_date,
-                to_date=w_h.end_date,
-                user_address=signup.public_address,
-            )
-            conn.add(u_wh)
-
+        if signup.work_history is not None:
+            for w_h in signup.work_history:
+                u_wh = UserWork(
+                    company=w_h.company_name,
+                    designation=w_h.designation,
+                    description=w_h.description,
+                    from_date=w_h.start_date,
+                    to_date=w_h.end_date,
+                    user_address=signup.public_address,
+                )
+                conn.add(u_wh)
         conn.commit()
         return {
             "status": 201,
@@ -171,3 +171,7 @@ def update_user_profile(req: UserProfileUpdate):
         conn.rollback()
         logging.error(e)
         return ApiError("Something went wrong, we're working on it", 500).as_http_response()
+
+# def user_update_work_history(w_h:UserWorkHistoryUpdate):
+#     try:
+#         prev_wh = conn.query()
