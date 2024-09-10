@@ -3,7 +3,6 @@ import uuid
 from fastapi import FastAPI
 from starlette import status
 
-
 from .forms.blogs import BlogCreate
 from .forms.blueprint import DeployCommunity
 from .forms.community import CommunityParticipant, ProposalComment, CommunityDiscussion, CommunityDiscussionComment
@@ -11,7 +10,8 @@ from .forms.transaction_manifest import TransactionSubmit
 # from .forms.blueprint import DeployCommunity
 from .logic import health as health_handler
 from .logic.activity.user_activity import get_user_activity, UserActivityModel, get_community_activity
-from .logic.auth.users import user_login_req, user_sign_up, check_user_exist, get_user_detail, update_user_profile
+from .logic.auth.users import user_login_req, user_sign_up, check_user_exist, get_user_detail, update_user_profile, \
+    delete_user
 from .logic.blogs.blogs import add_blogs, get_blogs
 from .logic.blueprint import add_blueprint as add_blueprint_logic
 from .forms import *
@@ -32,7 +32,11 @@ from .utils.presignsignature import generate_signature
 def load_server(app):
     # defines routes
 
-    @app.post('/run/predefine-query',tags=["system-apis"],description='add predefine data')
+    @app.delete('/delete/user')
+    def delete_user_route(user_addr: str):
+        return delete_user(user_addr)
+
+    @app.post('/run/predefine-query', tags=["system-apis"], description='add predefine data')
     def run_predefine_query():
         pre_define_data()
 

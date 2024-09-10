@@ -110,6 +110,10 @@ def get_user_detail(public_address: str):
             }
 
             return user_dict
+        else:
+            return {}
+
+
 
     except Exception as e:
         conn.rollback()
@@ -175,3 +179,32 @@ def update_user_profile(req: UserProfileUpdate):
 # def user_update_work_history(w_h:UserWorkHistoryUpdate):
 #     try:
 #         prev_wh = conn.query()
+
+def delete_user(u_a:str):
+    try:
+        u_m = conn.query(UserMetaData).filter(UserMetaData.user_address == u_a).first()
+        u_w = conn.query(UserWork).filter(UserWork.user_address == u_a).all()
+        u_f = conn.query(UserPreference).filter(UserPreference.user_address == u_a).all()
+        u = conn.query(User).filter(User.public_address == u_a).first()
+        if u_m is not None:
+            conn.delete(u_m)
+            conn.commit()
+        if u_w is not None:
+            for uw in u_w:
+                conn.delete(uw)
+                conn.commit()
+        if u_f is not None:
+            for uf in u_f:
+                conn.delete(uf)
+                conn.commit()
+        if u is not None:
+            conn.delete(u)
+            conn.commit()
+    except Exception as e:
+        conn.rollback()
+        logging.error(e)
+        return ApiError("Something went wrong, we're working on it", 500).as_http_response()
+
+
+
+
