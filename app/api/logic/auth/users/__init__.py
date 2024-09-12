@@ -167,6 +167,35 @@ def update_user_profile(req: UserProfileUpdate):
         if req.website_url is not None:
             user_meta_data.website = req.website_url
 
+        if req.work_history is not None:
+            for wh in req.work_history:
+                old_wh = conn.query(UserWork).filter(UserWork.id == wh.id).first()
+                if old_wh is None:
+                    new_wh = UserWork(
+                        user_address=req.public_address,
+                        company=wh.company_name,
+                        from_date=wh.start_date,
+                        to_date=wh.end_date,
+                        designation=wh.designation,
+                        description=wh.description,
+                    )
+                    conn.add(new_wh)
+                    conn.commit()
+
+                else:
+                    if wh.description is not None:
+                        old_wh.description = wh.description
+                    if wh.designation is not None:
+                        old_wh.designation = wh.designation
+                    if wh.start_date is not None:
+                        old_wh.start_date = wh.start_date
+                    if wh.end_date is not None:
+                        old_wh.to_date = wh.end_date
+                    if wh.company_name is not None:
+                        old_wh.company_name = wh.company_name
+                    conn.refresh(old_wh)
+                    conn.commit()
+
         conn.commit()
         conn.refresh(user_meta_data)
         return user_meta_data
@@ -176,11 +205,12 @@ def update_user_profile(req: UserProfileUpdate):
         logging.error(e)
         return ApiError("Something went wrong, we're working on it", 500).as_http_response()
 
+
 # def user_update_work_history(w_h:UserWorkHistoryUpdate):
 #     try:
 #         prev_wh = conn.query()
 
-def delete_user(u_a:str):
+def delete_user(u_a: str):
     try:
         u_m = conn.query(UserMetaData).filter(UserMetaData.user_address == u_a).first()
         u_w = conn.query(UserWork).filter(UserWork.user_address == u_a).all()
@@ -204,7 +234,3 @@ def delete_user(u_a:str):
         conn.rollback()
         logging.error(e)
         return ApiError("Something went wrong, we're working on it", 500).as_http_response()
-
-
-
-

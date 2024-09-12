@@ -32,6 +32,15 @@ class UserLogin(BaseModel):
     public_address: str = Field(..., description="user wallet public address")
 
 
+class UserWorkHistoryUpdate(BaseModel):
+    id: uuid.UUID = Field(..., description="user work history id")
+    company_name: str = Field(..., description="name of the company")
+    start_date: datetime = Field(..., description="start date")
+    end_date: Optional[datetime] = Field(..., description="start date, send null if currently working here")
+    designation: str = Field(..., description="designation of user")
+    description: str = Field(..., description="description of the work")
+
+
 class UserProfileUpdate(BaseModel):
     about: Optional[str] = Field(None, description="User updated description")
     image_url: Optional[str] = Field(None, description="User updated image URL")
@@ -42,12 +51,4 @@ class UserProfileUpdate(BaseModel):
     tiktok: Optional[str] = Field(None, description="User updated TikTok URL")
     cover_url: Optional[str] = Field(None, description="User cover url")
     bio: Optional[str] = Field(None, description="User cover url")
-
-
-class UserWorkHistoryUpdate(BaseModel):
-    id: uuid.UUID = Field(..., description="user work history id")
-    company_name: str = Field(..., description="name of the company")
-    start_date: datetime = Field(..., description="start date")
-    end_date: Optional[datetime] = Field(..., description="start date, send null if currently working here")
-    designation: str = Field(..., description="designation of user")
-    description: str = Field(..., description="description of the work")
+    work_history: Optional[list[UserWorkHistoryUpdate]]
