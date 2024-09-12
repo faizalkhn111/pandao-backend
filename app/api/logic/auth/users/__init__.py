@@ -166,8 +166,15 @@ def update_user_profile(req: UserProfileUpdate):
             user_meta_data.bio = req.bio
         if req.website_url is not None:
             user_meta_data.website = req.website_url
-
+        wh_ids = []
         if req.work_history is not None:
+            for wh in req.work_history:
+                if wh.id is not None:
+                    wh_ids.append(wh.id)
+            conn.query(UserWork).filter(
+                UserWork.user_address == req.public_address,
+                UserWork.id.notin_(wh_ids)
+            ).delete(synchronize_session=False)
             for wh in req.work_history:
                 if wh.id is None:
                     new_wh = UserWork(
@@ -181,6 +188,7 @@ def update_user_profile(req: UserProfileUpdate):
                     conn.add(new_wh)
                     conn.commit()
                     continue
+                wh_id.append(wh.id)
                 old_wh = conn.query(UserWork).filter(UserWork.id == wh.id).first()
                 if wh.description is not None:
                     old_wh.description = wh.description
