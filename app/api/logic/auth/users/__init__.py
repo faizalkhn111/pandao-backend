@@ -186,12 +186,12 @@ def update_user_profile(req: UserProfileUpdate):
                     old_wh.description = wh.description
                 if wh.designation is not None:
                     old_wh.designation = wh.designation
-                if wh.start_date is not None:
-                    old_wh.start_date = wh.from_date
-                if wh.end_date is not None:
+                if wh.from_date is not None:
+                    old_wh.from_date = wh.from_date
+                if wh.to_date is not None:
                     old_wh.to_date = wh.to_date
-                if wh.company_name is not None:
-                    old_wh.company_name = wh.company
+                if wh.company is not None:
+                    old_wh.company = wh.company
                 conn.commit()
         conn.commit()
         conn.refresh(user_meta_data)
