@@ -35,8 +35,8 @@ class UserLogin(BaseModel):
 class UserWorkHistoryUpdate(BaseModel):
     id: Optional[uuid.UUID] = Field(None, description="user work history id")
     company: str = Field(..., description="name of the company")
-    start_date: datetime = Field(..., description="start date")
-    end_date: Optional[datetime] = Field(..., description="start date, send null if currently working here")
+    from_date: datetime = Field(..., description="start date")
+    to_date: Optional[datetime] = Field(..., description="start date, send null if currently working here")
     designation: str = Field(..., description="designation of user")
     description: str = Field(..., description="description of the work")
 
