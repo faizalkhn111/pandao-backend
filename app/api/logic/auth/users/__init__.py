@@ -169,8 +169,7 @@ def update_user_profile(req: UserProfileUpdate):
 
         if req.work_history is not None:
             for wh in req.work_history:
-                old_wh = conn.query(UserWork).filter(UserWork.id == wh.id).first()
-                if old_wh is None:
+                if wh.id is None:
                     new_wh = UserWork(
                         user_address=req.public_address,
                         company=wh.company_name,
@@ -181,20 +180,22 @@ def update_user_profile(req: UserProfileUpdate):
                     )
                     conn.add(new_wh)
                     conn.commit()
+                    continue
+                old_wh = conn.query(UserWork).filter(UserWork.id == wh.id).first()
+                if wh.description is not None:
+                    old_wh.description = wh.description
+                if wh.designation is not None:
+                    old_wh.designation = wh.designation
+                if wh.start_date is not None:
+                    old_wh.start_date = wh.start_date
+                if wh.end_date is not None:
+                    old_wh.to_date = wh.end_date
+                if wh.company_name is not None:
+                    old_wh.company_name = wh.company_name
+                conn.refresh(old_wh)
+                conn.commit()
 
-                else:
-                    if wh.description is not None:
-                        old_wh.description = wh.description
-                    if wh.designation is not None:
-                        old_wh.designation = wh.designation
-                    if wh.start_date is not None:
-                        old_wh.start_date = wh.start_date
-                    if wh.end_date is not None:
-                        old_wh.to_date = wh.end_date
-                    if wh.company_name is not None:
-                        old_wh.company_name = wh.company_name
-                    conn.refresh(old_wh)
-                    conn.commit()
+
 
         conn.commit()
         conn.refresh(user_meta_data)
