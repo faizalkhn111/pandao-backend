@@ -172,7 +172,7 @@ def update_user_profile(req: UserProfileUpdate):
                 if wh.id is None:
                     new_wh = UserWork(
                         user_address=req.public_address,
-                        company=wh.company_name,
+                        company=wh.company,
                         from_date=wh.start_date,
                         to_date=wh.end_date,
                         designation=wh.designation,
@@ -191,7 +191,7 @@ def update_user_profile(req: UserProfileUpdate):
                 if wh.end_date is not None:
                     old_wh.to_date = wh.end_date
                 if wh.company_name is not None:
-                    old_wh.company_name = wh.company_name
+                    old_wh.company_name = wh.company
                 conn.commit()
         conn.commit()
         conn.refresh(user_meta_data)

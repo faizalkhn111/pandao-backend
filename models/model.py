@@ -176,7 +176,7 @@ class Blog(Base):
     thumbnail_image = Column(String, nullable=True)
     created_at: Mapped[DateTime] = Column(DateTime, default=func.now())
     published_by = Column(String, nullable=False)
-
+    url = Column(String, nullable=False)
 
 from .engine import engine
 

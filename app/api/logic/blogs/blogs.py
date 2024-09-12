@@ -22,7 +22,8 @@ def add_blogs(req: BlogCreate):
             title=req.title,
             description=req.description,
             thumbnail_image=req.thumbnail_image,
-            published_by=req.published_by
+            published_by=req.published_by,
+            url=req.url
         )
         conn.add(db_blog)
         conn.commit()
