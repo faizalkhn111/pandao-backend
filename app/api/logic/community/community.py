@@ -494,6 +494,20 @@ def add_proposal_comment(req: ProposalComment):
         )
 
         conn.add(new_comment)
+        # create a new activity
+        proposal_data = conn.query(Proposal).filter(Proposal.id == req.proposal_id).first()
+        user_data = user = conn.query(User).options(joinedload(User.usermetadata)).filter(
+            User.public_address == req.user_addr).first()
+        # create a new activity
+        community = conn.query(Community).filter(Community.id == proposal_data.community_id).first()
+        community_name = community.name
+        random_string = generate_random_string()
+        activity = UserActivity(
+            transaction_id=random_string,
+            transaction_info=f'commented on a proposal in {community.name} community',
+            user_address=proposal_data.community_id,
+            community_id=req.user_addr
+        )
         conn.commit()
         return new_comment
     except IntegrityError as e:
