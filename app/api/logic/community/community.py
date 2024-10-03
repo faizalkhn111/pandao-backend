@@ -9,7 +9,8 @@ from app.api.forms.blueprint import DeployCommunity
 from app.api.forms.community import ProposalComment, CommunityDiscussionComment
 # from app.api.forms.blueprint import DeployCommunity
 from models import dbsession as conn, BluePrint, Community as Com, User, Participants, UserMetaData, \
-    UserActivity, Community, CommunityToken, Proposal, ProposalComments, CommunityDiscussion, DiscussionComment
+    UserActivity, Community, CommunityToken, Proposal, ProposalComments, CommunityDiscussion, DiscussionComment, \
+    CommunityTags
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -39,8 +40,7 @@ def generate_random_string(length=12):
 def get_community(sort: str):
     query = conn.query(Community, func.count(Participants.id).label('participants_count')) \
         .outerjoin(Participants, Community.id == Participants.community_id) \
-        .group_by(Community.id) \
-
+        .group_by(Community.id)
     if sort == 'participants':
         query = query.order_by(func.count(Participants.id).desc())
     elif sort == 'funds':
@@ -75,8 +75,7 @@ def get_community(sort: str):
 def get_all_community_of_platform(sort: str):
     query = conn.query(Community, func.count(Participants.id).label('participants_count')) \
         .outerjoin(Participants, Community.id == Participants.community_id) \
-        .group_by(Community.id) \
-
+        .group_by(Community.id)
     if sort == 'participants':
         query = query.order_by(func.count(Participants.id).desc())
     elif sort == 'funds':
@@ -90,6 +89,12 @@ def get_all_community_of_platform(sort: str):
     # Now you can iterate over the result
     response = []
     for community, participant_count in communities_with_participants:
+        # get all the tags of the community
+        c_tags = conn.query(CommunityTags).filter(CommunityTags.community_id == community.id).all()
+        tags = []
+        if c_tags is not None:
+            for ct in c_tags:
+                tags.append(ct.tag)
         response.append(
             {
                 "component_address": community.component_address,
@@ -103,7 +108,8 @@ def get_all_community_of_platform(sort: str):
                 "number_of_participants": participant_count,
                 "image": community.image,
                 "funds": community.funds,
-                "description": community.description
+                "description": community.description,
+                "tags": tags
             }
         )
     return response
@@ -352,6 +358,17 @@ def add_community_discussion_comment(req: CommunityDiscussionComment):
     except Exception as e:
         conn.rollback()
         return e
+
+
+def get_community_tags(community_id: uuid.UUID):
+    c_tags = conn.query(CommunityTags).filter(CommunityTags.community_id == community_id).all()
+    tags = []
+    if c_tags is not None:
+        for ct in c_tags:
+            tags.append(ct.tag)
+    return {
+        'tags': tags
+    }
 
 
 def add_community_comment(req: CommunityDiscussion):

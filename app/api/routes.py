@@ -22,7 +22,7 @@ from .logic.community.community import create_community, get_user_community, che
     user_participate_in_community, get_community_participants, get_community_comments, add_community_comment, \
     get_single_community, get_community_metadata_details, get_community_tokens, get_community_active_proposal, \
     get_proposal_comment, add_proposal_comment, add_community_discussion_comment, get_discussion_comments, \
-    get_user_communities, get_all_community_of_platform
+    get_user_communities, get_all_community_of_platform, get_community_tags
 from .logic.event_listener import token_bucket_deploy_event_listener
 from .logic.health import pre_define_data
 from .logic.tags import get_all_tags_query
@@ -144,6 +144,10 @@ def load_server(app):
     @app.get('/community/participant/{c_id}', summary="user join a community", tags=(['community']))
     def get_community_participant_route(c_id: uuid.UUID):
         return get_community_participants(c_id)
+
+    @app.get('/community/tags/{c_id}', summary="get tags of the community", tags=(['community']))
+    def get_community_participant_route(c_id: uuid.UUID):
+        return get_community_tags(c_id)
 
     @app.get('/community/discussion/{c_id}', summary="get discussions of user community", tags=(['community']))
     def get_discussion_route(c_id: uuid.UUID):

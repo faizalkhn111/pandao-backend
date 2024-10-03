@@ -63,7 +63,7 @@ def transaction_manifest_routes(app):
         try:
             community = conn.query(Community).filter(Community.id == req.community_id).first()
             account_address = req.userAddress
-            XRD_take = req.tokenSupply + community.token_price
+            XRD_take = req.tokenSupply * community.token_price + 1
             community_address = community.component_address
             token_take = req.tokenSupply
             does_user_exist = conn.query(Participants).filter(Participants.community_id == community.id,
@@ -149,7 +149,7 @@ def transaction_manifest_routes(app):
             raise HTTPException(status_code=500, detail="Internal Server Error")
 
     @app.post('/manifest/build/praposal', tags=(['manifest_builder']))
-    def sell_token_token_weighted_dao(req: DeployProposal):
+    def build_proposal(req: DeployProposal):
         try:
             community = conn.query(Community).filter(Community.id == req.community_id).first()
             # check if there is any ongoing proposal
