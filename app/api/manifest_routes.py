@@ -87,7 +87,7 @@ def transaction_manifest_routes(app):
 
         CALL_METHOD
         Address("{community_address}")
-        "obtain_token"
+        "obtain_community_token"
         Bucket("bucket1")
         Decimal("{token_take}")
         ;
