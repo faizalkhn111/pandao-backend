@@ -109,7 +109,8 @@ def get_all_community_of_platform(sort: str):
                 "image": community.image,
                 "funds": community.funds,
                 "description": community.description,
-                "tags": tags
+                "tags": tags,
+                "purpose": community.purpose
             }
         )
     return response
