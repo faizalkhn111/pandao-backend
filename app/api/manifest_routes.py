@@ -254,7 +254,8 @@ def transaction_manifest_routes(app):
             "vote"
             Bucket("bucket1")
             {vote_against}
-            
+            Address("{req.userAddress}")
+        
         ;
 
         CALL_METHOD
