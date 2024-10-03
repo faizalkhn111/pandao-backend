@@ -26,9 +26,17 @@ def transaction_manifest_routes(app):
         organization_token_image = req.tokenImage
         description = req.description
         user_account = req.userAddress
+        purpose = req.purpose
+        # create tags
+        if req.tags is None:
+            raise HTTPException(status_code=400, detail="tags are required while creating a community")
+        tags_array = f'Array<String>(\n'
+        tags_array += ",\n".join(f'    "{tag}"' for tag in req.tags)
+        tags_array += "\n)"
+
         manifest = command_string = (
             f'CALL_FUNCTION\n'
-            f'Address("package_tdx_2_1p4whj4w7vfe0utgsekyngvgurcz7p4qt96arm0lgsxyrqxzjylq3qk")\n'
+            f'Address("package_tdx_2_1pkyemv8pr5znlu6drs0hwr9d3jwl6cz864ka93dzwu52mmkwd8ggra")\n'
             f'"TokenWeigtedDao"\n'
             f'"initiate"\n'
             f'"{organization_name}"\n'
@@ -39,6 +47,8 @@ def transaction_manifest_routes(app):
             f'"{organization_image}"\n'
             f'"{organization_token_image}"\n'
             f'"{description}"\n'
+            f'{tags_array}\n'
+            f'"{purpose}"\n'
             f';\n'
             f'CALL_METHOD\n'
             f'    Address("{user_account}")\n'

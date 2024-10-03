@@ -106,8 +106,16 @@ class Community(Base):
     token_bought = Column(Integer)
     owner_address = Column(String, ForeignKey('users.public_address'))
     funds = Column(Float)
+    purpose = Column(String)
     # community_comment: Mapped[list['CommunityDiscussion']] = relationship("CommunityDiscussion",
     # back_populates="community")
+
+
+class CommunityTags(Base):
+    __tablename__ = 'community_tags'
+    community_id = Column(UUID(as_uuid=True), primary_key=True, nullable=False)
+    tag: Mapped[str] = Column(String, nullable=False)
+    __table_args__ = (PrimaryKeyConstraint('community_id', 'tag'),)
 
 
 class ProposalComments(Base):
@@ -177,6 +185,7 @@ class Blog(Base):
     created_at: Mapped[DateTime] = Column(DateTime, default=func.now())
     published_by = Column(String, nullable=False)
     url = Column(String, nullable=False)
+
 
 from .engine import engine
 

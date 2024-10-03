@@ -6,7 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 
 from app.api.logic.community.community import generate_random_string
-from models import Community, dbsession as conn, UserActivity, CommunityToken, Proposal, Participants
+from models import Community, dbsession as conn, UserActivity, CommunityToken, Proposal, Participants, CommunityTags
 
 
 ## pending , add logger
@@ -38,6 +38,7 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
         response_data = response_data
         tx_events = response_data['transaction']['receipt']['events']
         # print(tx_events)
+        community_tags = []
         for event in tx_events:
             if event['name'] == 'PandaoEvent':
                 for field in event['data']['fields']:
@@ -45,13 +46,16 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     if field['field_name'] == 'meta_data':
                         for m_d in field['fields']:
                             for _m_d in m_d['fields']:
-                                metadata[_m_d['field_name']] = _m_d['value']
-
-
+                                print(_m_d['field_name'])
+                                if _m_d['field_name'] == 'tags':
+                                    for tags in _m_d['elements']:
+                                        community_tags.append(tags['value'])
+                                else:
+                                    metadata[_m_d['field_name']] = _m_d['value']
                     else:
                         resources[field['field_name']] = field.get('value') or field.get('variant_name')
 
-        # check the event type of the tx
+        print(community_tags)
         try:
             if resources['event_type'] == 'DEPLOYMENT':
                 # create a new community
@@ -71,16 +75,20 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     image=metadata['community_image'],
                     total_token=metadata['total_token'],
                     funds=0,
-                    token_bought=0
+                    token_bought=0,
+                    purpose=metadata['purpose']
                 )
                 conn.add(community)
+                for t in community_tags:
+                    tag = CommunityTags(
+                        community_id=community_id,
+                        tag=t
+                    )
+                    conn.add(tag)
                 conn.commit()
-
-                # create user activity
                 participant = Participants(
                     user_addr=user_address,
                     community_id=community_id,
-
                 )
                 conn.add(participant)
                 conn.commit()

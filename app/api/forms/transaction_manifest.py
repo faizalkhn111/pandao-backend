@@ -19,6 +19,8 @@ class DeployTokenWeightedDao(BaseModel):
     communityImage: str = Field(..., description="community image")
     description: str = Field(..., description="description of community ")
     tokenImage: str = Field(..., description="token image")
+    purpose: str = Field(..., description="purpose of community")
+    tags: list[str] = Field(..., description="tags of the community")
 
 
 class BuyTokenWeightedDaoToken(BaseModel):
@@ -41,4 +43,4 @@ class DeployProposal(BaseModel):
 class ProposalVote(BaseModel):
     proposal_address: str = Field(..., description="propsal address")
     userAddress: str = Field(..., description="user address")
-    vote_against: bool = Field(... , description=" voted against")
+    vote_against: bool = Field(..., description=" voted against")
