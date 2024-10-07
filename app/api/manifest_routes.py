@@ -36,7 +36,7 @@ def transaction_manifest_routes(app):
 
         manifest = command_string = (
             f'CALL_FUNCTION\n'
-            f'Address("package_tdx_2_1pkyemv8pr5znlu6drs0hwr9d3jwl6cz864ka93dzwu52mmkwd8ggra")\n'
+            f'Address("package_tdx_2_1pkc7h6qheph0x0pts7zd9u09vtqm3qe79akuggxr2rkpck2pfcfmq6")\n'
             f'"TokenWeigtedDao"\n'
             f'"initiate"\n'
             f'"{organization_name}"\n'
@@ -211,6 +211,13 @@ def transaction_manifest_routes(app):
                                     {end_hour}u8 ,
                                     {end_minute}u8 ,
                                     {end_second}u8)
+                                    Enum<1u8>(
+                                    Address("account_tdx_2_128e6fmjkhjqx0n8h9562rrvstl883wq22pzea4ucnnx0762ptlch4s")
+                                    )
+                                    Enum<1u8>(
+                                    Decimal("40")
+                                    )
+
                                     ;
             """
             return transaction_string

@@ -44,12 +44,17 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 for field in event['data']['fields']:
                     print(field['field_name'])
                     if field['field_name'] == 'meta_data':
+                        print(field['field_name'])
                         for m_d in field['fields']:
                             for _m_d in m_d['fields']:
                                 print(_m_d['field_name'])
                                 if _m_d['field_name'] == 'tags':
                                     for tags in _m_d['elements']:
                                         community_tags.append(tags['value'])
+                                elif _m_d['field_name'] == 'address_issued_bonds_to_sell' or _m_d['field_name'] == 'target_xrd_amount':
+                                    print(_m_d['fields'])
+                                    metadata[_m_d['field_name']] = _m_d['fields'][0]['value']
+
                                 else:
                                     metadata[_m_d['field_name']] = _m_d['value']
                     else:
