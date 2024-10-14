@@ -15,10 +15,10 @@ def generate_signature():
     expire = int(time.time()) + 60 * 30
 
     # Secret key of your project
-    secret = '5bfd4441dfb2a488a946'
+    constant = '5bfd4441dfb2a488a946'
 
     # Generate the signature
-    signature = generate_secure_signature(secret, expire)
+    signature = generate_secure_signature(constant, expire)
 
     # Return the signature and expiration time as a dictionary
     return {
