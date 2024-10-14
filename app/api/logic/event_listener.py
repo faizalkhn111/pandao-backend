@@ -51,10 +51,8 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                                 if _m_d['field_name'] == 'tags':
                                     for tags in _m_d['elements']:
                                         community_tags.append(tags['value'])
-                                elif _m_d['field_name'] == 'address_issued_bonds_to_sell' or _m_d['field_name'] == 'target_xrd_amount':
-                                    print(_m_d['fields'])
+                                elif _m_d['field_name'] == 'address_issued_bonds_to_sell' or _m_d['field_name'] == 'target_xrd_amount' or _m_d['field_name'] == 'proposal_creator_address':
                                     metadata[_m_d['field_name']] = _m_d['fields'][0]['value']
-
                                 else:
                                     metadata[_m_d['field_name']] = _m_d['value']
                     else:
@@ -185,6 +183,10 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 pass
             elif resources['event_type'] == 'PRAPOSAL':
                 community_address = resources['component_address']
+                print(community_address)
+                print(community_address)
+                print(community_address)
+
                 # get community names and detail
                 community = conn.query(Community).filter(Community.component_address == community_address).first()
                 new_proposal = Proposal(

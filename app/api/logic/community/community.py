@@ -576,7 +576,7 @@ def get_community_tokens(community_id: uuid.UUID):
 
 
 def get_community_active_proposal(community_id: uuid.UUID):
-    proposal = conn.query(Proposal).filter(Proposal.community_id == community_id, Proposal.is_active == True).first()
+    proposal = conn.query(Proposal).filter(Proposal.community_id == community_id, Proposal.is_active == True).all()
     return proposal
 
 
