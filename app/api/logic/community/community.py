@@ -526,7 +526,7 @@ def add_proposal_comment(req: ProposalComment):
             user_address=proposal_data.community_id,
             community_id=req.user_addr
         )
-        conn.addactivity()
+        conn.add(activity)
         conn.commit()
         return new_comment
     except IntegrityError as e:
