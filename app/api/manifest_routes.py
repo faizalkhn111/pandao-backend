@@ -217,7 +217,7 @@ def transaction_manifest_routes(app):
                                     Enum<1u8>(
                                     Decimal("40")
                                     )Enum<1u8>(
-                                    Address("account_tdx_2_128e6fmjkhjqx0n8h9562rrvstl883wq22pzea4ucnnx0762ptlch4s"
+                                    Address("{account_address}"
                                     )
 
                                     
