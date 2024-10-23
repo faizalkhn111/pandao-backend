@@ -174,6 +174,7 @@ class Proposal(Base):
     ends_time = Column(Integer)
     minimum_quorum = Column(Integer)
     proposal_address: Mapped[str] = mapped_column(String)
+    proposal_id : Column[Integer]
 
 
 class Blog(Base):

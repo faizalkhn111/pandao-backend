@@ -51,7 +51,9 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                                 if _m_d['field_name'] == 'tags':
                                     for tags in _m_d['elements']:
                                         community_tags.append(tags['value'])
-                                elif _m_d['field_name'] == 'address_issued_bonds_to_sell' or _m_d['field_name'] == 'target_xrd_amount' or _m_d['field_name'] == 'proposal_creator_address':
+                                elif _m_d['field_name'] == 'address_issued_bonds_to_sell' or _m_d[
+                                    'field_name'] == 'target_xrd_amount' or _m_d[
+                                    'field_name'] == 'proposal_creator_address':
                                     metadata[_m_d['field_name']] = _m_d['fields'][0]['value']
                                 elif _m_d['field_name'] == 'amount_of_tokens_should_be_minted':
                                     pass
@@ -201,7 +203,8 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     start_time=metadata['start_time_ts'],
                     ends_time=metadata['end_time_ts'],
                     minimum_quorum=metadata['minimum_quorum'],
-                    proposal_address=metadata['component_address']
+                    proposal_address=metadata['component_address'],
+                    proposal_id=metadata['proposal_id']
                 )
                 activity = UserActivity(
                     transaction_id=tx_id,

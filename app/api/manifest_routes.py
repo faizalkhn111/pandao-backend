@@ -259,6 +259,7 @@ def transaction_manifest_routes(app):
             Bucket("bucket1")
             {vote_against}
             Address("{req.userAddress}")
+            {proposal.proposal_id}
         
         ;
 
