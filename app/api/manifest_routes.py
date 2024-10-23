@@ -152,11 +152,11 @@ def transaction_manifest_routes(app):
     def build_proposal(req: DeployProposal):
         try:
             community = conn.query(Community).filter(Community.id == req.community_id).first()
-            # check if there is any ongoing proposal
-            proposal = conn.query(Proposal).filter(Proposal.community_id == req.community_id,
-                                                   Proposal.is_active == True).first()
-            if proposal:
-                raise HTTPException(status_code=401, detail="there is already a active proposal")
+            # # check if there is any ongoing proposal
+            # proposal = conn.query(Proposal).filter(Proposal.community_id == req.community_id,
+            #                                        Proposal.is_active == True).first()
+            # if proposal:
+            #     raise HTTPException(status_code=401, detail="there is already a active proposal")
 
             start_time = req.start_time
             end_time = req.end_time
