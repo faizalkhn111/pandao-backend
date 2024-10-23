@@ -188,7 +188,7 @@ def update_user_profile(req: UserProfileUpdate):
                     conn.add(new_wh)
                     conn.commit()
                     continue
-                wh_id.append(wh.id)
+                wh_ids.append(wh.id)
                 old_wh = conn.query(UserWork).filter(UserWork.id == wh.id).first()
                 if wh.description is not None:
                     old_wh.description = wh.description
