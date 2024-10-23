@@ -53,6 +53,8 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                                         community_tags.append(tags['value'])
                                 elif _m_d['field_name'] == 'address_issued_bonds_to_sell' or _m_d['field_name'] == 'target_xrd_amount' or _m_d['field_name'] == 'proposal_creator_address':
                                     metadata[_m_d['field_name']] = _m_d['fields'][0]['value']
+                                elif _m_d['field_name'] == 'amount_of_tokens_should_be_minted':
+                                    pass
                                 else:
                                     metadata[_m_d['field_name']] = _m_d['value']
                     else:

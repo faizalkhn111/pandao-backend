@@ -184,13 +184,6 @@ def transaction_manifest_routes(app):
             start_second = start_time_dt.second
 
             transaction_string = f"""
-                                    
-                                    CALL_METHOD
-                                    Address("{account_address}")
-                                    "create_proof_of_amount"
-                                    Address("{community.owner_token_address}")
-                                    Decimal("1")
-                                    ;
                                     CALL_METHOD
                                     Address("{community.component_address}")
                                     "create_praposal"
