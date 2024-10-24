@@ -187,9 +187,7 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 pass
             elif resources['event_type'] == 'PRAPOSAL':
                 community_address = resources['component_address']
-                print(community_address)
-                print(community_address)
-                print(community_address)
+
 
                 # get community names and detail
                 community = conn.query(Community).filter(Community.component_address == community_address).first()
@@ -234,8 +232,10 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                 )
                 conn.commit()
             elif resources['event_type'] == 'EXECUTE_PROPOSAL':
-                proposal_address = resources['component_address']
+                component_address = resources['component_address']
                 proposal_address = metadata['praposal_address']
+                community = conn.query(Community).filter(Community.component_address == component_address).first()
+                community.funds = community.funds - 40
                 proposal = conn.query(Proposal).filter(Proposal.proposal_address == proposal_address).first()
                 proposal.is_active = False
                 activity = UserActivity(
@@ -244,7 +244,7 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     user_address=user_address,
                     community_id=proposal.community_id
                 )
-                conn.add(activity )
+                conn.add(activity)
                 conn.commit()
 
 
