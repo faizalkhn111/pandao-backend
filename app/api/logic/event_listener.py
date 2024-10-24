@@ -244,6 +244,7 @@ def token_bucket_deploy_event_listener(tx_id: str, user_address: str):
                     user_address=user_address,
                     community_id=proposal.community_id
                 )
+                conn.add(activity )
                 conn.commit()
 
 

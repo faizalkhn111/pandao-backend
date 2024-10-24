@@ -581,6 +581,10 @@ def get_community_active_proposal(community_id: uuid.UUID):
     return proposal
 
 
+def get_community_all_proposal(community_id: uuid.UUID):
+    proposal = conn.query(Proposal).filter(Proposal.community_id == community_id).all()
+    return proposal
+
 def get_user_communities(user_addr: str, owner: bool):
     try:
         if not owner:

@@ -177,6 +177,7 @@ class Proposal(Base):
     proposal_id = Column(Integer)
 
 
+
 class Blog(Base):
     __tablename__ = 'blogs'
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

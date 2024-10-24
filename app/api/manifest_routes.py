@@ -212,8 +212,6 @@ def transaction_manifest_routes(app):
                                     Address("{account_address}")
                                     )
 
-                                    
-
                                     ;
             """
             return transaction_string
