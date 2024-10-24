@@ -44,3 +44,8 @@ class ProposalVote(BaseModel):
     proposal_address: str = Field(..., description="propsal address")
     userAddress: str = Field(..., description="user address")
     vote_against: bool = Field(..., description=" voted against")
+
+
+class ExecuteProposal(BaseModel):
+    proposal_id: int = Field(..., description="proposal id")
+    proposal_address: str = Field(..., description="proposal address")

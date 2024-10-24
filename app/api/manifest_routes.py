@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.forms.transaction_manifest import DeployTokenWeightedDao, BuyTokenWeightedDaoToken, DeployProposal, \
-    ProposalVote
+    ProposalVote, ExecuteProposal
 from models import Community, Participants, Proposal, CommunityToken
 from models import dbsession as conn
 
@@ -267,5 +267,19 @@ def transaction_manifest_routes(app):
             "deposit_batch"
             Expression("ENTIRE_WORKTOP")
         ;
+        """
+        return transaction_string
+
+    @app.post('/manifest/proposal/execute', tags=(['manifest_builder']))
+    def vote_in_proposal(req: ExecuteProposal):
+        proposal = conn.query(Proposal).filter(Proposal.proposal_address == req.proposal_address).first()
+        community_id = proposal.community_id
+        community = conn.query(Community).filter(Community.id == community_id).first()
+        transaction_string = f"""
+               CALL_METHOD
+               Address("{community.component_address}")
+               "execute_proposal"
+               {proposal.proposal_id}u64
+            ;
         """
         return transaction_string
